@@ -14,9 +14,11 @@ import com.testgithub.repositories.model.Repository
 import kotlinx.android.synthetic.main.item_repository.view.*
 import timber.log.Timber
 
+
 class RepositoriesAdapter : ListAdapter<Repository, RepositoryViewHolder>(asyncDifferConfig) {
     var itemClickListener: ((repository: Repository) -> Unit)? = null
     var highligtedText = ""
+    var onBottomReachedListener: OnBottomReachedListener? = null
 
     companion object {
         val asyncDifferConfig = object : DiffUtil.ItemCallback<Repository>() {
@@ -35,6 +37,9 @@ class RepositoriesAdapter : ListAdapter<Repository, RepositoryViewHolder>(asyncD
     }
 
     override fun onBindViewHolder(holder: RepositoryViewHolder, position: Int) {
+        if (position == itemCount - 1) {
+            onBottomReachedListener?.onBottomReached(position)
+        }
         val item = getItem(position)
         holder.bind(item, highligtedText)
     }
@@ -67,6 +72,11 @@ class RepositoryViewHolder(parent: ViewGroup) :
     }
 
     fun onRecycled() {
+        nameTextView.text = ""
         Timber.tag("TestGitHub").d("RepositoryViewHolder recycled")
     }
+}
+
+interface OnBottomReachedListener {
+    fun onBottomReached(position: Int)
 }

@@ -35,12 +35,21 @@ class RepositoriesSearchFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         searchImageButton.setOnClickListener {
+            repositoriesAdapter.submitList(emptyList())
+            repositoriesAdapter.notifyDataSetChanged()
             viewModel.searchRepositories(searchEditText.text.toString())
         }
+
+        repositoriesAdapter.onBottomReachedListener = object : OnBottomReachedListener {
+            override fun onBottomReached(position: Int) {
+                viewModel.listScrolledToEnd()
+            }
+        }
         repositoriesRecyclerView.itemAnimator = null
-        repositoriesRecyclerView.layoutManager = LinearLayoutManager(context)
+
         repositoriesRecyclerView.adapter = repositoriesAdapter
 
+        repositoriesRecyclerView.layoutManager = LinearLayoutManager(context)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -50,6 +59,7 @@ class RepositoriesSearchFragment : Fragment() {
             Observer<Pair<String, List<Repository>>> { (searchText, repositoriesList) ->
                 repositoriesAdapter.highligtedText = searchText
                 repositoriesAdapter.submitList(repositoriesList)
+                repositoriesAdapter.notifyDataSetChanged()
             }
         )
 
