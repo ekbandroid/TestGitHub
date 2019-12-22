@@ -4,6 +4,7 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import io.reactivex.Flowable
 import io.reactivex.Maybe
 
 @Dao
@@ -29,5 +30,5 @@ interface FavoriteRepositoriesDao {
     fun getFavoriteRepositoryById(id: String): Maybe<FavoriteRepositoryEntity>
 
     @Query("SELECT * FROM ${FavoriteRepositoryEntity.TABLE_NAME}")
-    fun getAllFavoriteRepositories(): Maybe<List<FavoriteRepositoryEntity>>
+    fun getAllFavoriteRepositories(): Flowable<List<FavoriteRepositoryEntity>>
 }

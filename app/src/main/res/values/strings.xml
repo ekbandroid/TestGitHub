@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">TestGitHub</string>
+    <string name="tab_search">Search for repositories</string>
+    <string name="tab_favorite">Favorites</string>
 </resources>

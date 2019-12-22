@@ -9,8 +9,7 @@ import com.firebase.ui.auth.IdpResponse
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.testgithub.extention.replaceFragment
-import com.testgithub.repositories.favorites.FavoriteRepositoriesFragment
-import com.testgithub.repositories.search.RepositoriesSearchFragment
+import com.testgithub.repositories.main.MainRepositoriesFragment
 
 private const val RC_SIGN_IN = 1
 
@@ -43,8 +42,8 @@ class MainActivity : AppCompatActivity() {
             if (resultCode == Activity.RESULT_OK) {
                 // Successfully signed in
                 firebaseUser = FirebaseAuth.getInstance().currentUser
-                // replaceFragment(RepositoriesSearchFragment())
-                replaceFragment(FavoriteRepositoriesFragment())
+                replaceFragment(MainRepositoriesFragment())
+
                 // ...
             } else {
                 // Sign in failed. If response is null the user canceled the

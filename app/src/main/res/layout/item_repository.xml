@@ -28,7 +28,7 @@
         android:id="@+id/favoriteImageView"
         android:layout_width="60dp"
         android:layout_height="60dp"
-        android:padding="12dp"
+        android:padding="16dp"
         app:srcCompat="@drawable/ic_like_inactive_16dp" />
 
 </LinearLayout>

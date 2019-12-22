@@ -24,6 +24,8 @@ class RepositoriesSearchViewModel(
     var repositoriesList: ArrayList<Repository> = ArrayList()
     private var searchRepositoriesDisposable: Disposable? = null
     private var searchEventsDisposable: Disposable
+    private var getFavoriteRepositoriesDisposable: Disposable
+    private var repositoryLikedDisposable: Disposable? = null
     private val searchEventsProcessor =
         PublishProcessor.create<NextEvent>()
 
@@ -38,6 +40,34 @@ class RepositoriesSearchViewModel(
                     },
                     {
                         Timber.d(it, "Error searchEventsProcessor")
+                    }
+                )
+
+        getFavoriteRepositoriesDisposable =
+            repositoriesSearchUseCase.getFavoriteRepositories()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                    { repositoryList ->
+                        repositoriesList = ArrayList(repositoriesList.map {
+                            it.copy(isFavorited = false)
+                        })
+
+                        repositoryList.forEach { favoriteRepository ->
+                            repositoriesList.filter {
+                                it.id == favoriteRepository.id
+                            }
+                                .forEach {
+                                    repositoriesList[repositoriesList.indexOf(it)] =
+                                        it.copy(isFavorited = true)
+                                }
+                        }
+                        repositoriesListLiveData.value?.first?.let {
+                            repositoriesListLiveData.postValue(it to repositoriesList)
+                        }
+                    },
+                    {
+                        Timber.e(it, "Error searchRepositories")
                     }
                 )
     }
@@ -105,37 +135,42 @@ class RepositoriesSearchViewModel(
 
     }
 
+    fun onRepositoryLiked(repository: Repository) {
+        var repositoryCopy: Repository
+        repositoryLikedDisposable?.dispose()
+        repositoryLikedDisposable =
+            if (!repository.isFavorited) {
+                repositoryCopy = repository.copy(isFavorited = true)
+                repositoriesSearchUseCase.saveFavoriteRepository(repository)
+            } else {
+                repositoryCopy = repository.copy(isFavorited = false)
+                repositoriesSearchUseCase.deleteFavoriteRepository(repository)
+
+            }
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                    {
+                        val index = repositoriesList.indexOf(repository)
+                        repositoriesList[index] = repositoryCopy
+                        repositoriesListLiveData.value?.first?.let {
+                            repositoriesListLiveData.postValue(it to repositoriesList)
+                        }
+                    },
+                    {
+                        Timber.e(it, "Error onRepositoryLiked")
+                    }
+                )
+    }
+
     override fun onCleared() {
         super.onCleared()
         searchEventsDisposable.dispose()
         searchRepositoriesDisposable?.dispose()
+        getFavoriteRepositoriesDisposable.dispose()
+        repositoryLikedDisposable?.dispose()
     }
 
-    fun onRepositoryLiked(repository: Repository) {
-        var repositoryCopy: Repository
-        if (!repository.isFavorited) {
-            repositoryCopy = repository.copy(isFavorited = true)
-            repositoriesSearchUseCase.saveFavoriteRepository(repository)
-        } else {
-            repositoryCopy = repository.copy(isFavorited = false)
-            repositoriesSearchUseCase.deleteFavoriteRepository(repository)
-
-        }
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe(
-                {
-                    val index = repositoriesList.indexOf(repository)
-                    repositoriesList[index] = repositoryCopy
-                    repositoriesListLiveData.value?.first?.let {
-                        repositoriesListLiveData.postValue(it to repositoriesList)
-                    }
-                },
-                {
-                    Timber.e(it, "Error onRepositoryLiked")
-                }
-            )
-    }
 }
 
 data class NextEvent(val searchText: String, val page: Int, val itemsCount: Int)

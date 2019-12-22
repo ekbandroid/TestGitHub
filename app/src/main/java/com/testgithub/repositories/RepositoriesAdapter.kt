@@ -68,7 +68,7 @@ class RepositoryViewHolder(parent: ViewGroup) :
         } else {
             favoriteImageView.setImageResource(R.drawable.ic_like_inactive_16dp)
         }
-        val spannable = SpannableString("${item.id} ${item.owner.login}/${item.name}")
+        val spannable = SpannableString("${item.owner.login}/${item.name}")
         TextUtils.highlightText(
             spannable,
             "${item.owner.login}/${item.name}",

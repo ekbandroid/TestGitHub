@@ -10,12 +10,13 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.testgithub.R
 import com.testgithub.repositories.OnBottomReachedListener
 import com.testgithub.repositories.RepositoriesAdapter
+import com.testgithub.repositories.main.OnSearchTextListener
 import com.testgithub.repositories.model.Repository
 import kotlinx.android.synthetic.main.fragment_repositories_search.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 
-class RepositoriesSearchFragment : Fragment() {
+class RepositoriesSearchFragment : Fragment(), OnSearchTextListener {
 
     private val viewModel: RepositoriesSearchViewModel by viewModel()
 
@@ -30,12 +31,6 @@ class RepositoriesSearchFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        searchImageButton.setOnClickListener {
-            repositoriesAdapter.submitList(emptyList())
-            repositoriesAdapter.notifyDataSetChanged()
-            viewModel.searchRepositories(searchEditText.text.toString())
-        }
-
         repositoriesAdapter.onBottomReachedListener = object :
             OnBottomReachedListener {
             override fun onBottomReached(position: Int) {
@@ -43,9 +38,7 @@ class RepositoriesSearchFragment : Fragment() {
             }
         }
         repositoriesRecyclerView.itemAnimator = null
-
         repositoriesRecyclerView.adapter = repositoriesAdapter
-
         repositoriesRecyclerView.layoutManager = LinearLayoutManager(context)
         repositoriesAdapter.favoriteClickListener =
             { repository -> viewModel.onRepositoryLiked(repository) }
@@ -61,5 +54,11 @@ class RepositoriesSearchFragment : Fragment() {
                 repositoriesAdapter.notifyDataSetChanged()
             }
         )
+    }
+
+    override fun onSearchText(text: String) {
+        repositoriesAdapter.submitList(emptyList())
+        repositoriesAdapter.notifyDataSetChanged()
+        viewModel.searchRepositories(text)
     }
 }

@@ -10,12 +10,13 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.testgithub.R
 import com.testgithub.repositories.OnBottomReachedListener
 import com.testgithub.repositories.RepositoriesAdapter
+import com.testgithub.repositories.main.OnSearchTextListener
 import com.testgithub.repositories.model.Repository
 import kotlinx.android.synthetic.main.fragment_repositories_search.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 
-class FavoriteRepositoriesFragment : Fragment() {
+class FavoriteRepositoriesFragment : Fragment(), OnSearchTextListener {
 
     private val viewModel: FavoriteRepositoriesViewModel by viewModel()
 
@@ -26,17 +27,11 @@ class FavoriteRepositoriesFragment : Fragment() {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View = inflater.inflate(R.layout.fragment_repositories_search, container, false)
+    ): View = inflater.inflate(R.layout.fragment_repositories_favorites, container, false)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        repositoriesAdapter.onBottomReachedListener = object :
-            OnBottomReachedListener {
-            override fun onBottomReached(position: Int) {
-                viewModel.listScrolledToEnd()
-            }
-        }
         repositoriesRecyclerView.itemAnimator = null
 
         repositoriesRecyclerView.adapter = repositoriesAdapter
@@ -45,7 +40,6 @@ class FavoriteRepositoriesFragment : Fragment() {
         repositoriesAdapter.favoriteClickListener =
             { repository -> viewModel.onDeleteRepository(repository) }
 
-        viewModel.getFavoriteRepositories()
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -58,5 +52,9 @@ class FavoriteRepositoriesFragment : Fragment() {
                 repositoriesAdapter.notifyDataSetChanged()
             }
         )
+    }
+
+    override fun onSearchText(text: String) {
+        viewModel.onSearch(text)
     }
 }
