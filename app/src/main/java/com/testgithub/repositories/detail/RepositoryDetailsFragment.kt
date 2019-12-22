@@ -33,8 +33,9 @@ class RepositoryDetailsFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        toolbar.setNavigationOnClickListener { activity?.onBackPressed() }
         selectedRepository?.let { repository ->
-            nameTextView.text = "${repository.name}/${repository.name}"
+            nameTextView.text = "${repository.owner.login}/${repository.name}"
             forksTextView.text = repository.forks.toString()
             starsTextView.text = repository.stars.roundToInt().toString()
             dateCreateTextView.text = TextUtils.convertServerDate(repository.dateCreate)

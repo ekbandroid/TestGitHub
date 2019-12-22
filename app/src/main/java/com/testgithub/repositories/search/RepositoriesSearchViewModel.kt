@@ -171,6 +171,11 @@ class RepositoriesSearchViewModel(
         repositoryLikedDisposable?.dispose()
     }
 
+    fun updateRepositories() {
+        repositoriesListLiveData.value?.first?.let {
+            searchRepositories(it)
+        }
+    }
 }
 
 data class NextEvent(val searchText: String, val page: Int, val itemsCount: Int)

@@ -20,11 +20,15 @@ class MainRepositoriesFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        val repositoriesPagerAdapter = RepositoriesPagerAdapter(requireFragmentManager(), requireContext())
+        toolbar.setNavigationOnClickListener { activity?.onBackPressed() }
+        val repositoriesPagerAdapter =
+            RepositoriesPagerAdapter(requireFragmentManager(), requireContext())
         viewPager.adapter = repositoriesPagerAdapter
         repositoriesTabLayout.setupWithViewPager(viewPager)
         searchImageButton.setOnClickListener {
-            (repositoriesPagerAdapter.getItem(0) as OnSearchTextListener).onSearchText(searchEditText.text.toString())
+            (repositoriesPagerAdapter.getItem(0) as OnSearchTextListener).onSearchText(
+                searchEditText.text.toString()
+            )
         }
         searchEditText.doAfterTextChanged { text ->
             (repositoriesPagerAdapter.getItem(1) as OnSearchTextListener).onSearchText(text.toString())

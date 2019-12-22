@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -47,6 +48,11 @@ class RepositoriesSearchFragment : Fragment(), OnSearchTextListener {
             { repository ->
                 addFragment(RepositoryDetailsFragment.create(repository))
             }
+        swipeRefreshLayout.setOnRefreshListener {
+            viewModel.updateRepositories()
+            swipeRefreshLayout.isRefreshing = false
+            loadingStateView.isVisible = true
+        }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -54,6 +60,7 @@ class RepositoriesSearchFragment : Fragment(), OnSearchTextListener {
         viewModel.repositoriesListLiveData.observe(
             this,
             Observer<Pair<String, List<Repository>>> { (searchText, repositoriesList) ->
+                loadingStateView.isVisible = false
                 repositoriesAdapter.highligtedText = searchText
                 repositoriesAdapter.submitList(repositoriesList)
                 repositoriesAdapter.notifyDataSetChanged()
@@ -64,6 +71,7 @@ class RepositoriesSearchFragment : Fragment(), OnSearchTextListener {
     override fun onSearchText(text: String) {
         repositoriesAdapter.submitList(emptyList())
         repositoriesAdapter.notifyDataSetChanged()
+        loadingStateView.isVisible = true
         viewModel.searchRepositories(text)
     }
 }

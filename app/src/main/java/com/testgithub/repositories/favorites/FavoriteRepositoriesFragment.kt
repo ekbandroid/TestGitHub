@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -39,7 +40,15 @@ class FavoriteRepositoriesFragment : Fragment(), OnSearchTextListener {
 
         repositoriesRecyclerView.layoutManager = LinearLayoutManager(context)
         repositoriesAdapter.favoriteClickListener =
-            { repository -> viewModel.onDeleteRepository(repository) }
+            { repository ->
+                AlertDialog.Builder(requireContext())
+                    .setTitle(R.string.delete_alert_dialog_title)
+                    .setPositiveButton(android.R.string.ok) { _, _ ->
+                        viewModel.onDeleteRepository(repository)
+                    }
+                    .setNegativeButton(android.R.string.cancel) { _, _ -> }
+                    .show()
+            }
         repositoriesAdapter.itemClickListener =
             { repository ->
                 addFragment(RepositoryDetailsFragment.create(repository))
