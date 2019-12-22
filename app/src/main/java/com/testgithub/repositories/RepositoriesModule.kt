@@ -1,5 +1,6 @@
 package com.testgithub.repositories
 
+import com.testgithub.repositories.search.RepositoriesSearchViewModel
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 import retrofit2.Retrofit
@@ -17,7 +18,11 @@ object RepositoriesModule {
 
             return@single retrofit.create(GitHubApi::class.java)
         }
-        single { RepositoriesSearchUseCase(get()) }
-        viewModel { RepositoriesSearchViewModel(get()) }
+        single { RepositoriesSearchUseCase(get(), get()) }
+        viewModel {
+            RepositoriesSearchViewModel(
+                get()
+            )
+        }
     }
 }

@@ -1,7 +1,8 @@
-package com.testgithub.repositories
+package com.testgithub.repositories.search
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.testgithub.repositories.RepositoriesSearchUseCase
 import com.testgithub.repositories.model.Repository
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
@@ -45,7 +46,11 @@ class RepositoriesSearchViewModel(
         if (searchText.isBlank()) return
         searchRepositoriesDisposable?.dispose()
         searchRepositoriesDisposable =
-            repositoriesSearchUseCase.searchRepositories(searchText, FIRST_PAGE, PAGE_ITEMS_COUNT)
+            repositoriesSearchUseCase.searchRepositories(
+                searchText,
+                FIRST_PAGE,
+                PAGE_ITEMS_COUNT
+            )
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
@@ -65,7 +70,13 @@ class RepositoriesSearchViewModel(
     fun listScrolledToEnd() {
         Timber.d("listScrolledTEnd")
         repositoriesListLiveData.value?.first?.let { searchText ->
-            searchEventsProcessor.onNext(NextEvent(searchText, page + 1, PAGE_ITEMS_COUNT))
+            searchEventsProcessor.onNext(
+                NextEvent(
+                    searchText,
+                    page + 1,
+                    PAGE_ITEMS_COUNT
+                )
+            )
         }
     }
 
@@ -82,12 +93,10 @@ class RepositoriesSearchViewModel(
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
                     { repositoryList ->
-                        if (repositoryList.isNotEmpty() && event.page > page) {
-                            repositoriesList.addAll(repositoryList)
-                            page = event.page
-                            Timber.d("searchRepositories repositoriesList.size ${repositoriesList.size}")
-                            repositoriesListLiveData.postValue(event.searchText to repositoriesList)
-                        }
+                        repositoriesList.addAll(repositoryList)
+                        page = event.page
+                        Timber.d("searchRepositories repositoriesList.size ${repositoriesList.size}")
+                        repositoriesListLiveData.postValue(event.searchText to repositoriesList)
                     },
                     {
                         Timber.e(it, "Error getNextPage")
@@ -100,6 +109,32 @@ class RepositoriesSearchViewModel(
         super.onCleared()
         searchEventsDisposable.dispose()
         searchRepositoriesDisposable?.dispose()
+    }
+
+    fun onRepositoryLiked(repository: Repository) {
+        var repositoryCopy: Repository
+        if (!repository.isFavorited) {
+            repositoryCopy = repository.copy(isFavorited = true)
+            repositoriesSearchUseCase.saveFavoriteRepository(repository)
+        } else {
+            repositoryCopy = repository.copy(isFavorited = false)
+            repositoriesSearchUseCase.deleteFavoriteRepository(repository)
+
+        }
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(
+                {
+                    val index = repositoriesList.indexOf(repository)
+                    repositoriesList[index] = repositoryCopy
+                    repositoriesListLiveData.value?.first?.let {
+                        repositoriesListLiveData.postValue(it to repositoriesList)
+                    }
+                },
+                {
+                    Timber.e(it, "Error onRepositoryLiked")
+                }
+            )
     }
 }
 

@@ -25,9 +25,10 @@
     </LinearLayout>
 
     <ImageView
+        android:id="@+id/favoriteImageView"
         android:layout_width="60dp"
         android:layout_height="60dp"
         android:padding="12dp"
-        app:srcCompat="@android:drawable/btn_star_big_off" />
+        app:srcCompat="@drawable/ic_like_inactive_16dp" />
 
 </LinearLayout>

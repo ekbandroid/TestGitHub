@@ -3,6 +3,7 @@ package com.testgithub.repositories
 import android.text.SpannableString
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
@@ -16,7 +17,7 @@ import timber.log.Timber
 
 
 class RepositoriesAdapter : ListAdapter<Repository, RepositoryViewHolder>(asyncDifferConfig) {
-    var itemClickListener: ((repository: Repository) -> Unit)? = null
+    var favoriteClickListener: ((repository: Repository) -> Unit)? = null
     var highligtedText = ""
     var onBottomReachedListener: OnBottomReachedListener? = null
 
@@ -32,7 +33,8 @@ class RepositoriesAdapter : ListAdapter<Repository, RepositoryViewHolder>(asyncD
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RepositoryViewHolder {
         val repositoryViewHolder = RepositoryViewHolder(parent)
-        repositoryViewHolder.itemClickListener = { media -> itemClickListener?.invoke(media) }
+        repositoryViewHolder.favoriteClickListener =
+            { media -> favoriteClickListener?.invoke(media) }
         return repositoryViewHolder
     }
 
@@ -57,11 +59,16 @@ class RepositoryViewHolder(parent: ViewGroup) :
             .inflate(R.layout.item_repository, parent, false)
     ) {
 
-    var itemClickListener: ((repository: Repository) -> Unit)? = null
+    var favoriteClickListener: ((repository: Repository) -> Unit)? = null
     val nameTextView: TextView = itemView.nameTextView
+    val favoriteImageView: ImageView = itemView.favoriteImageView
     fun bind(item: Repository, highligtedText: String) {
-
-        val spannable = SpannableString("${item.owner.login}/${item.name}")
+        if (item.isFavorited) {
+            favoriteImageView.setImageResource(R.drawable.ic_like_active_16dp)
+        } else {
+            favoriteImageView.setImageResource(R.drawable.ic_like_inactive_16dp)
+        }
+        val spannable = SpannableString("${item.id} ${item.owner.login}/${item.name}")
         TextUtils.highlightText(
             spannable,
             "${item.owner.login}/${item.name}",
@@ -69,6 +76,7 @@ class RepositoryViewHolder(parent: ViewGroup) :
             nameTextView.context.getColorCompat(R.color.colorAccent)
         )
         nameTextView.text = spannable
+        favoriteImageView.setOnClickListener { favoriteClickListener?.invoke(item) }
     }
 
     fun onRecycled() {
