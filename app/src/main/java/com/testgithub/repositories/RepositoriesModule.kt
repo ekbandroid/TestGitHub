@@ -1,5 +1,6 @@
 package com.testgithub.repositories
 
+import com.testgithub.repositories.favorites.FavoriteRepositoriesViewModel
 import com.testgithub.repositories.search.RepositoriesSearchViewModel
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
@@ -21,6 +22,12 @@ object RepositoriesModule {
         single { RepositoriesSearchUseCase(get(), get()) }
         viewModel {
             RepositoriesSearchViewModel(
+                get()
+            )
+        }
+
+        viewModel {
+            FavoriteRepositoriesViewModel(
                 get()
             )
         }

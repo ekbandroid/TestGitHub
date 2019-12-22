@@ -33,7 +33,8 @@ object RepositoryConverter {
                 description = it.description,
                 forks = it.forks,
                 stars = it.score,
-                dateCreate = it.createdAt
+                dateCreate = it.createdAt,
+                isFavorited = true
             )
         }
 
@@ -44,7 +45,7 @@ object RepositoryConverter {
             ownerId = repository.owner.id,
             ownerLogin = repository.owner.login,
             ownerAvatarUrl = repository.owner.avatarUrl,
-            description = repository.description?:"",
+            description = repository.description ?: "",
             forks = repository.forks,
             score = repository.stars,
             createdAt = repository.dateCreate

@@ -29,5 +29,5 @@ interface FavoriteRepositoriesDao {
     fun getFavoriteRepositoryById(id: String): Maybe<FavoriteRepositoryEntity>
 
     @Query("SELECT * FROM ${FavoriteRepositoryEntity.TABLE_NAME}")
-    fun loadAllUsers(): Maybe<List<FavoriteRepositoryEntity>>
+    fun getAllFavoriteRepositories(): Maybe<List<FavoriteRepositoryEntity>>
 }
