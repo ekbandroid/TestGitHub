@@ -8,8 +8,9 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.testgithub.R
-import com.testgithub.repositories.OnBottomReachedListener
+import com.testgithub.extention.addFragment
 import com.testgithub.repositories.RepositoriesAdapter
+import com.testgithub.repositories.detail.RepositoryDetailsFragment
 import com.testgithub.repositories.main.OnSearchTextListener
 import com.testgithub.repositories.model.Repository
 import kotlinx.android.synthetic.main.fragment_repositories_search.*
@@ -39,7 +40,10 @@ class FavoriteRepositoriesFragment : Fragment(), OnSearchTextListener {
         repositoriesRecyclerView.layoutManager = LinearLayoutManager(context)
         repositoriesAdapter.favoriteClickListener =
             { repository -> viewModel.onDeleteRepository(repository) }
-
+        repositoriesAdapter.itemClickListener =
+            { repository ->
+                addFragment(RepositoryDetailsFragment.create(repository))
+            }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {

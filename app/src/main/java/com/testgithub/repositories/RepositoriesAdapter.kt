@@ -17,6 +17,7 @@ import timber.log.Timber
 
 
 class RepositoriesAdapter : ListAdapter<Repository, RepositoryViewHolder>(asyncDifferConfig) {
+    var itemClickListener: ((repository: Repository) -> Unit)? = null
     var favoriteClickListener: ((repository: Repository) -> Unit)? = null
     var highligtedText = ""
     var onBottomReachedListener: OnBottomReachedListener? = null
@@ -35,6 +36,8 @@ class RepositoriesAdapter : ListAdapter<Repository, RepositoryViewHolder>(asyncD
         val repositoryViewHolder = RepositoryViewHolder(parent)
         repositoryViewHolder.favoriteClickListener =
             { media -> favoriteClickListener?.invoke(media) }
+        repositoryViewHolder.itemClickListener =
+            { media -> itemClickListener?.invoke(media) }
         return repositoryViewHolder
     }
 
@@ -60,6 +63,7 @@ class RepositoryViewHolder(parent: ViewGroup) :
     ) {
 
     var favoriteClickListener: ((repository: Repository) -> Unit)? = null
+    var itemClickListener: ((repository: Repository) -> Unit)? = null
     val nameTextView: TextView = itemView.nameTextView
     val favoriteImageView: ImageView = itemView.favoriteImageView
     fun bind(item: Repository, highligtedText: String) {
@@ -77,6 +81,7 @@ class RepositoryViewHolder(parent: ViewGroup) :
         )
         nameTextView.text = spannable
         favoriteImageView.setOnClickListener { favoriteClickListener?.invoke(item) }
+        itemView.setOnClickListener { itemClickListener?.invoke(item) }
     }
 
     fun onRecycled() {
