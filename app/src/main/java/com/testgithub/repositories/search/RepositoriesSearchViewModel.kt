@@ -13,6 +13,8 @@ import java.util.concurrent.TimeUnit
 
 private const val FIRST_PAGE = 1
 private const val PAGE_ITEMS_COUNT = 100
+private const val ITEMS_COUNT_LIMIT = 1000
+
 private const val DEBOUNCE_MS = 1000L
 
 class RepositoriesSearchViewModel(
@@ -100,7 +102,7 @@ class RepositoriesSearchViewModel(
     fun listScrolledToEnd() {
         Timber.d("listScrolledTEnd")
         repositoriesListLiveData.value?.let { (searchText, list) ->
-            if (list.size < PAGE_ITEMS_COUNT) return
+            if (list.size < PAGE_ITEMS_COUNT || list.size == ITEMS_COUNT_LIMIT) return
             if (list[list.size - 1] != null) {
                 repositoriesListLiveData.postValue(searchText to list + listOf<Repository?>(null))
             }
@@ -136,6 +138,15 @@ class RepositoriesSearchViewModel(
                     },
                     {
                         Timber.e(it, "Error getNextPage")
+                        repositoriesListLiveData.value?.let { (searchText, list) ->
+                            if (list.size >= PAGE_ITEMS_COUNT) {
+                                if (list[list.size - 1] == null) {
+                                    repositoriesListLiveData.postValue(
+                                        searchText to list.subList(0, list.size - 2)
+                                    )
+                                }
+                            }
+                        }
                     }
                 )
 
