@@ -1,69 +1,51 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     tools:context=".MainActivity">
 
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbar"
         style="@style/ToolbarStyle"
-        app:navigationIcon="@drawable/ic_menu_back"
-        app:title="@string/app_name"
-        app:titleTextColor="@color/white" />
-
-    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:orientation="vertical">
+        android:layout_height="wrap_content">
 
         <LinearLayout
-            android:id="@+id/currentUserLinearLayout"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:padding="8dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
+            android:id="@+id/toolbarContent"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal">
 
             <ImageView
                 android:id="@+id/userAvatarImageView"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                tools:srcCompat="@tools:sample/avatars[2]" />
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:visibility="gone"
+                tools:srcCompat="@tools:sample/avatars[2]"
+                tools:visibility="visible" />
 
-            <TextView
-                android:id="@+id/currentUserTextView"
-                android:layout_width="wrap_content"
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/toolbarTitleTextView"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:padding="8dp"
-                tools:text="User" />
+                android:layout_gravity="center_vertical"
+                android:layout_marginStart="24dp"
+                android:layout_marginEnd="16dp"
+                android:layout_weight="1"
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:text="@string/app_name"
+                android:textAppearance="@style/Base.TextAppearance.Medium20"
+                android:textColor="@color/white" />
         </LinearLayout>
 
+    </androidx.appcompat.widget.Toolbar>
 
-        <com.google.android.gms.common.SignInButton
-            android:id="@+id/signInButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:visibility="gone"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/currentUserLinearLayout"
-            tools:visibility="visible" />
+    <FrameLayout
+        android:id="@+id/container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
 
-        <Button
-            android:id="@+id/signOutButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="?android:attr/selectableItemBackground"
-            android:text="@string/sign_out"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/signInButton" />
-    </androidx.constraintlayout.widget.ConstraintLayout>
-
-</FrameLayout>
+</LinearLayout>

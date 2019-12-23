@@ -31,4 +31,7 @@ interface FavoriteRepositoriesDao {
 
     @Query("SELECT * FROM ${FavoriteRepositoryEntity.TABLE_NAME}")
     fun getAllFavoriteRepositories(): Flowable<List<FavoriteRepositoryEntity>>
+
+    @Query("DELETE FROM ${FavoriteRepositoryEntity.TABLE_NAME}")
+    fun deleteAll()
 }

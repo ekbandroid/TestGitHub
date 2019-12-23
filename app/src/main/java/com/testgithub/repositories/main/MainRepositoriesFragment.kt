@@ -24,7 +24,6 @@ class MainRepositoriesFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        toolbar.setNavigationOnClickListener { activity?.onBackPressed() }
         repositoriesPagerAdapter =
             RepositoriesPagerAdapter(requireFragmentManager(), requireContext())
         viewPager.adapter = repositoriesPagerAdapter

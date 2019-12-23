@@ -7,24 +7,29 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
 import com.bumptech.glide.request.RequestOptions
-import com.firebase.ui.auth.AuthUI
-import com.firebase.ui.auth.IdpResponse
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
+import com.testgithub.authorisation.AuthorizationFragment
 import com.testgithub.common.GlideApp
+import com.testgithub.db.FavoriteRepositoriesDao
 import com.testgithub.extention.replaceFragment
 import com.testgithub.repositories.main.MainRepositoriesFragment
+import io.reactivex.Single
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.activity_main.*
+import org.koin.android.ext.android.inject
 
-private const val RC_SIGN_IN = 1
+const val RC_SIGN_IN = 1
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var auth: FirebaseAuth
     private lateinit var googleSignInClient: GoogleSignInClient
+    private val favoriteRepositoriesDao: FavoriteRepositoriesDao by inject()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -35,48 +40,38 @@ class MainActivity : AppCompatActivity() {
             .requestIdToken(getString(R.string.default_web_client_id))
             .requestEmail()
             .build()
-        // [END config_signin]
 
         googleSignInClient = GoogleSignIn.getClient(this, gso)
 
         firebaseUser = auth.currentUser
 
-        showToolbar(firebaseUser != null)
-
-        toolbar.setNavigationOnClickListener {
-            if (firebaseUser != null) {
-                replaceFragment(MainRepositoriesFragment())
-            }
-        }
         if (firebaseUser != null) {
             firebaseUser?.let {
                 showCurrentUser(it)
             }
             replaceMainRepositoriesFragment()
         } else {
-            signInButton.isVisible = true
-            signOutButton.isVisible = false
+            replaceAuthorizationFragment()
         }
-        signInButton.setOnClickListener {
-            val providers = arrayListOf(AuthUI.IdpConfig.GoogleBuilder().build())
-            startActivityForResult(
-                AuthUI.getInstance()
-                    .createSignInIntentBuilder()
-                    .setAvailableProviders(providers)
-                    .build(),
-                RC_SIGN_IN
-            )
-        }
-        signOutButton.setOnClickListener {
+
+        userAvatarImageView.setOnClickListener {
             AlertDialog.Builder(this)
                 .setTitle(R.string.sign_out_alert_dialog_title)
                 .setPositiveButton(android.R.string.ok) { _, _ ->
                     auth.signOut()
                     googleSignInClient.revokeAccess().addOnCompleteListener(this) {
-                        currentUserLinearLayout.isVisible = false
-                        signInButton.isVisible = true
-                        signOutButton.isVisible = false
-                        showToolbar(false)
+                        showCurrentUser(null)
+                        Single.fromCallable {
+                            favoriteRepositoriesDao.deleteAll()
+                        }
+                            .subscribeOn(Schedulers.io())
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .subscribe(
+                                {},
+                                {}
+                            )
+
+                        replaceAuthorizationFragment()
                     }
                 }
                 .setNegativeButton(android.R.string.cancel) { _, _ -> }
@@ -89,23 +84,12 @@ class MainActivity : AppCompatActivity() {
         super.onActivityResult(requestCode, resultCode, data)
 
         if (requestCode == RC_SIGN_IN) {
-            val response = IdpResponse.fromResultIntent(data)
-
             if (resultCode == Activity.RESULT_OK) {
-                // Successfully signed in
                 firebaseUser = FirebaseAuth.getInstance().currentUser
                 firebaseUser?.let {
                     showCurrentUser(it)
                 }
-                signInButton.isVisible = false
-                signOutButton.isVisible = true
-                toolbar.isVisible = firebaseUser != null
-
-                showToolbar(firebaseUser != null)
-
                 replaceMainRepositoriesFragment()
-
-                // ...
             } else {
                 // Sign in failed. If response is null the user canceled the
                 // sign-in flow using the back button. Otherwise check
@@ -116,25 +100,31 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun replaceMainRepositoriesFragment() {
-        replaceFragment(MainRepositoriesFragment())
+        replaceFragment(
+            MainRepositoriesFragment(),
+            container.id,
+            false
+        )
     }
 
-    private fun showCurrentUser(firebaseUser: FirebaseUser) {
-        currentUserLinearLayout.isVisible = true
-        firebaseUser.displayName?.let {
-            currentUserTextView.text = it
-        }
-        GlideApp.with(this)
-            .load(firebaseUser.photoUrl)
-            .apply(RequestOptions.circleCropTransform())
-            .into(userAvatarImageView)
+    private fun replaceAuthorizationFragment() {
+        replaceFragment(
+            AuthorizationFragment(),
+            container.id,
+            false
+        )
     }
 
-    private fun showToolbar(showNavigation: Boolean) {
-        if (showNavigation) {
-            toolbar.navigationIcon = getDrawable(R.drawable.ic_menu_back)
+    private fun showCurrentUser(firebaseUser: FirebaseUser?) {
+        if (firebaseUser != null) {
+            userAvatarImageView.isVisible = true
+            GlideApp.with(this)
+                .load(firebaseUser.photoUrl)
+                .apply(RequestOptions.circleCropTransform())
+                .into(userAvatarImageView)
         } else {
-            toolbar.navigationIcon = null
+            userAvatarImageView.setImageDrawable(null)
+            userAvatarImageView.isVisible = false
         }
     }
 }
