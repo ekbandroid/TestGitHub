@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.Fragment
 import com.testgithub.R
+import com.testgithub.extention.hideKeyboard
 import kotlinx.android.synthetic.main.fragment_repositories_main.*
 
 
@@ -26,6 +27,7 @@ class MainRepositoriesFragment : Fragment() {
         viewPager.adapter = repositoriesPagerAdapter
         repositoriesTabLayout.setupWithViewPager(viewPager)
         searchImageButton.setOnClickListener {
+            activity?.hideKeyboard()
             (repositoriesPagerAdapter.getItem(0) as OnSearchTextListener).onSearchText(
                 searchEditText.text.toString()
             )
