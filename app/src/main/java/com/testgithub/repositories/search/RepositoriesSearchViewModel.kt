@@ -18,7 +18,7 @@ private const val DEBOUNCE_MS = 1000L
 class RepositoriesSearchViewModel(
     private val repositoriesSearchUseCase: RepositoriesSearchUseCase
 ) : ViewModel() {
-    val repositoriesListLiveData = MutableLiveData<Pair<String, List<Repository>>>()
+    val repositoriesListLiveData = MutableLiveData<Pair<String, List<Repository?>>>()
 
     var page = FIRST_PAGE
     var repositoriesList: ArrayList<Repository> = ArrayList()
@@ -99,6 +99,12 @@ class RepositoriesSearchViewModel(
 
     fun listScrolledToEnd() {
         Timber.d("listScrolledTEnd")
+        repositoriesListLiveData.value?.let { (searchText, list) ->
+            if (list.size < PAGE_ITEMS_COUNT) return
+            if (list[list.size - 1] != null) {
+                repositoriesListLiveData.postValue(searchText to list + listOf<Repository?>(null))
+            }
+        }
         repositoriesListLiveData.value?.first?.let { searchText ->
             searchEventsProcessor.onNext(
                 NextEvent(

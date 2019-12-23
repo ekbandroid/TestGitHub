@@ -29,6 +29,7 @@ class MainRepositoriesFragment : Fragment() {
             (repositoriesPagerAdapter.getItem(0) as OnSearchTextListener).onSearchText(
                 searchEditText.text.toString()
             )
+            viewPager.setCurrentItem(0, true)
         }
         searchEditText.doAfterTextChanged { text ->
             (repositoriesPagerAdapter.getItem(1) as OnSearchTextListener).onSearchText(text.toString())

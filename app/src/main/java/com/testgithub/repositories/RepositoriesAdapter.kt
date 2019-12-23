@@ -1,6 +1,5 @@
 package com.testgithub.repositories
 
-import android.text.SpannableString
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.ImageView
@@ -13,10 +12,12 @@ import com.testgithub.common.TextUtils
 import com.testgithub.extention.getColorCompat
 import com.testgithub.repositories.model.Repository
 import kotlinx.android.synthetic.main.item_repository.view.*
-import timber.log.Timber
 
 
-class RepositoriesAdapter : ListAdapter<Repository, RepositoryViewHolder>(asyncDifferConfig) {
+private const val VIEW_TYPE_ITEM = 0
+private const val VIEW_TYPE_LOADING = 1
+
+class RepositoriesAdapter : ListAdapter<Repository, RecyclerView.ViewHolder>(asyncDifferConfig) {
     var itemClickListener: ((repository: Repository) -> Unit)? = null
     var favoriteClickListener: ((repository: Repository) -> Unit)? = null
     var highligtedText = ""
@@ -32,26 +33,32 @@ class RepositoriesAdapter : ListAdapter<Repository, RepositoryViewHolder>(asyncD
         }
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RepositoryViewHolder {
-        val repositoryViewHolder = RepositoryViewHolder(parent)
-        repositoryViewHolder.favoriteClickListener =
-            { media -> favoriteClickListener?.invoke(media) }
-        repositoryViewHolder.itemClickListener =
-            { media -> itemClickListener?.invoke(media) }
-        return repositoryViewHolder
-    }
-
-    override fun onBindViewHolder(holder: RepositoryViewHolder, position: Int) {
-        if (position == itemCount - 1) {
-            onBottomReachedListener?.onBottomReached(position)
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) =
+        if (viewType == VIEW_TYPE_ITEM) {
+            val repositoryViewHolder = RepositoryViewHolder(parent)
+            repositoryViewHolder.favoriteClickListener =
+                { media -> favoriteClickListener?.invoke(media) }
+            repositoryViewHolder.itemClickListener =
+                { media -> itemClickListener?.invoke(media) }
+            repositoryViewHolder
+        } else {
+            LoadingViewHolder(parent)
         }
-        val item = getItem(position)
-        holder.bind(item, highligtedText)
+
+    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
+        when (holder) {
+            is RepositoryViewHolder -> {
+                if (position == itemCount - 1) {
+                    onBottomReachedListener?.onBottomReached(position)
+                }
+                val item = getItem(position)
+                holder.bind(item, highligtedText)
+            }
+        }
     }
 
-    override fun onViewRecycled(holder: RepositoryViewHolder) {
-        super.onViewRecycled(holder)
-        holder.onRecycled()
+    override fun getItemViewType(position: Int): Int {
+        return if (currentList[position] == null) VIEW_TYPE_LOADING else VIEW_TYPE_ITEM
     }
 }
 
@@ -64,31 +71,45 @@ class RepositoryViewHolder(parent: ViewGroup) :
 
     var favoriteClickListener: ((repository: Repository) -> Unit)? = null
     var itemClickListener: ((repository: Repository) -> Unit)? = null
-    val nameTextView: TextView = itemView.nameTextView
-    val favoriteImageView: ImageView = itemView.favoriteImageView
+    private val nameTextView: TextView = itemView.nameTextView
+    private val favoriteImageView: ImageView = itemView.favoriteImageView
+    private val descriptionTextView: TextView = itemView.descriptionTextView
+
     fun bind(item: Repository, highligtedText: String) {
         if (item.isFavorited) {
-            favoriteImageView.setImageResource(R.drawable.ic_like_active_16dp)
+            favoriteImageView.setImageResource(android.R.drawable.star_big_on)
         } else {
-            favoriteImageView.setImageResource(R.drawable.ic_like_inactive_16dp)
+            favoriteImageView.setImageResource(android.R.drawable.star_big_off)
         }
-        val spannable = SpannableString("${item.owner.login}/${item.name}")
-        TextUtils.highlightText(
-            spannable,
+        TextUtils.setSpannableText(
+            nameTextView,
             "${item.owner.login}/${item.name}",
             highligtedText,
-            nameTextView.context.getColorCompat(R.color.colorAccent)
+            nameTextView.context.getColorCompat(
+                R.color.colorAccent
+            )
         )
-        nameTextView.text = spannable
+
+        TextUtils.setSpannableText(
+            descriptionTextView,
+            item.description ?: "",
+            highligtedText,
+            descriptionTextView.context.getColorCompat(
+                R.color.colorAccent
+            )
+        )
+
         favoriteImageView.setOnClickListener { favoriteClickListener?.invoke(item) }
         itemView.setOnClickListener { itemClickListener?.invoke(item) }
     }
-
-    fun onRecycled() {
-        nameTextView.text = ""
-        Timber.tag("TestGitHub").d("RepositoryViewHolder recycled")
-    }
 }
+
+class LoadingViewHolder(parent: ViewGroup) :
+    RecyclerView.ViewHolder(
+        LayoutInflater
+            .from(parent.context)
+            .inflate(R.layout.item_loading, parent, false)
+    )
 
 interface OnBottomReachedListener {
     fun onBottomReached(position: Int)

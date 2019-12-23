@@ -22,8 +22,7 @@ class RepositoriesSearchFragment : Fragment(), OnSearchTextListener {
 
     private val viewModel: RepositoriesSearchViewModel by viewModel()
 
-    private val repositoriesAdapter =
-        RepositoriesAdapter()
+    private val repositoriesAdapter = RepositoriesAdapter()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -59,7 +58,7 @@ class RepositoriesSearchFragment : Fragment(), OnSearchTextListener {
         super.onCreate(savedInstanceState)
         viewModel.repositoriesListLiveData.observe(
             this,
-            Observer<Pair<String, List<Repository>>> { (searchText, repositoriesList) ->
+            Observer<Pair<String, List<Repository?>>> { (searchText, repositoriesList) ->
                 loadingStateView.isVisible = false
                 repositoriesAdapter.highligtedText = searchText
                 repositoriesAdapter.submitList(repositoriesList)
