@@ -40,6 +40,6 @@
         android:layout_height="60dp"
         android:background="?selectableItemBackgroundBorderless"
         android:padding="20dp"
-        app:srcCompat="@drawable/ic_like_inactive_16dp" />
+        app:srcCompat="@android:drawable/star_big_on" />
 
 </LinearLayout>

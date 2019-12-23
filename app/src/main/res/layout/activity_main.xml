@@ -1,42 +1,69 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".MainActivity">
+
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbar"
         style="@style/ToolbarStyle"
         app:navigationIcon="@drawable/ic_menu_back"
-        app:titleTextColor="@color/white"
-        app:title="@string/app_name" />
-    <LinearLayout
+        app:title="@string/app_name"
+        app:titleTextColor="@color/white" />
+
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
         android:layout_gravity="center"
-        android:gravity="center"
-        >
-        <TextView
-            android:id="@+id/currentUserTextView"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:id="@+id/currentUserLinearLayout"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:padding="8dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
 
-        />
+            <ImageView
+                android:id="@+id/userAvatarImageView"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                tools:srcCompat="@tools:sample/avatars[2]" />
+
+            <TextView
+                android:id="@+id/currentUserTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="8dp"
+                tools:text="User" />
+        </LinearLayout>
+
+
         <com.google.android.gms.common.SignInButton
             android:id="@+id/signInButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/currentUserLinearLayout"
             tools:visibility="visible" />
 
         <Button
             android:id="@+id/signOutButton"
             android:layout_width="wrap_content"
-            android:layout_height="0dp"
-            android:layout_weight="1"
-            android:text="@string/sign_out" />
-    </LinearLayout>
+            android:layout_height="wrap_content"
+            android:background="?android:attr/selectableItemBackground"
+            android:text="@string/sign_out"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/signInButton" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
 </FrameLayout>

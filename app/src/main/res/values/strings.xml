@@ -5,6 +5,7 @@
     <string name="repository_details_title">Details</string>
     <string name="enter_text_hint">enter text to search</string>
     <string name="delete_alert_dialog_title">Delete from favorites?</string>
+    <string name="sign_out_alert_dialog_title">Sign out?</string>
     <string name="cancel">cancel</string>
     <string name="sign_out">Sign out</string>
 </resources>

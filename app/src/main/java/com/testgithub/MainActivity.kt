@@ -3,8 +3,10 @@ package com.testgithub
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
+import com.bumptech.glide.request.RequestOptions
 import com.firebase.ui.auth.AuthUI
 import com.firebase.ui.auth.IdpResponse
 import com.google.android.gms.auth.api.signin.GoogleSignIn
@@ -12,6 +14,7 @@ import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
+import com.testgithub.common.GlideApp
 import com.testgithub.extention.replaceFragment
 import com.testgithub.repositories.main.MainRepositoriesFragment
 import kotlinx.android.synthetic.main.activity_main.*
@@ -49,6 +52,7 @@ class MainActivity : AppCompatActivity() {
             replaceFragment(MainRepositoriesFragment())
         } else {
             signInButton.isVisible = true
+            signOutButton.isVisible = false
         }
         signInButton.setOnClickListener {
             val providers = arrayListOf(AuthUI.IdpConfig.GoogleBuilder().build())
@@ -61,12 +65,19 @@ class MainActivity : AppCompatActivity() {
             )
         }
         signOutButton.setOnClickListener {
-            auth.signOut()
-            googleSignInClient.revokeAccess().addOnCompleteListener(this) {
-                currentUserTextView.text = ""
-                signInButton.isVisible = true
-                toolbar.isVisible = false
-            }
+            AlertDialog.Builder(this)
+                .setTitle(R.string.sign_out_alert_dialog_title)
+                .setPositiveButton(android.R.string.ok) { _, _ ->
+                    auth.signOut()
+                    googleSignInClient.revokeAccess().addOnCompleteListener(this) {
+                        currentUserLinearLayout.isVisible = false
+                        signInButton.isVisible = true
+                        signOutButton.isVisible = false
+                        toolbar.isVisible = false
+                    }
+                }
+                .setNegativeButton(android.R.string.cancel) { _, _ -> }
+                .show()
         }
     }
 
@@ -80,8 +91,11 @@ class MainActivity : AppCompatActivity() {
             if (resultCode == Activity.RESULT_OK) {
                 // Successfully signed in
                 firebaseUser = FirebaseAuth.getInstance().currentUser
-                currentUserTextView.text = firebaseUser?.displayName
+                firebaseUser?.let {
+                    showCurrentUser(it)
+                }
                 signInButton.isVisible = false
+                signOutButton.isVisible = true
                 toolbar.isVisible = firebaseUser != null
 
                 replaceFragment(MainRepositoriesFragment())
