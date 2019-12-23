@@ -14,16 +14,18 @@ import java.util.concurrent.TimeUnit
 private const val FIRST_PAGE = 1
 private const val PAGE_ITEMS_COUNT = 100
 private const val ITEMS_COUNT_LIMIT = 1000
-
 private const val DEBOUNCE_MS = 1000L
 
 class RepositoriesSearchViewModel(
     private val repositoriesSearchUseCase: RepositoriesSearchUseCase
 ) : ViewModel() {
     val repositoriesListLiveData = MutableLiveData<Pair<String, List<Repository?>>>()
+    val showProgressLiveData = MutableLiveData<Boolean>()
+    val showSwipeRefreshLiveData = MutableLiveData<Boolean>()
+    val showErrorLiveData = MutableLiveData<String>()
 
-    var page = FIRST_PAGE
-    var repositoriesList: ArrayList<Repository> = ArrayList()
+    private var page = FIRST_PAGE
+    private var repositoriesList: ArrayList<Repository> = ArrayList()
     private var searchRepositoriesDisposable: Disposable? = null
     private var searchEventsDisposable: Disposable
     private var getFavoriteRepositoriesDisposable: Disposable
@@ -72,10 +74,26 @@ class RepositoriesSearchViewModel(
                         Timber.e(it, "Error searchRepositories")
                     }
                 )
+        showProgressLiveData.postValue(false)
+        showSwipeRefreshLiveData.postValue(false)
     }
 
     fun searchRepositories(searchText: String) {
         if (searchText.isBlank()) return
+        repositoriesListLiveData.postValue(searchText to emptyList())
+        showProgressLiveData.postValue(true)
+        loadRepositories(searchText)
+    }
+
+    fun updateRepositories() {
+        showSwipeRefreshLiveData.postValue(false)
+        repositoriesListLiveData.value?.first?.let {
+            showProgressLiveData.postValue(true)
+            loadRepositories(it)
+        }
+    }
+
+    private fun loadRepositories(searchText: String) {
         searchRepositoriesDisposable?.dispose()
         searchRepositoriesDisposable =
             repositoriesSearchUseCase.searchRepositories(
@@ -87,6 +105,7 @@ class RepositoriesSearchViewModel(
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
                     { repositoryList ->
+                        showProgressLiveData.postValue(false)
                         repositoriesList.clear()
                         page = FIRST_PAGE
                         Timber.d("searchRepositories result $repositoryList")
@@ -94,7 +113,9 @@ class RepositoriesSearchViewModel(
                         repositoriesListLiveData.postValue(searchText to repositoriesList)
                     },
                     {
+                        showProgressLiveData.postValue(false)
                         Timber.e(it, "Error searchRepositories")
+                        showErrorLiveData.postValue("Error loadRepositories")
                     }
                 )
     }
@@ -153,7 +174,7 @@ class RepositoriesSearchViewModel(
     }
 
     fun onRepositoryLiked(repository: Repository) {
-        var repositoryCopy: Repository
+        val repositoryCopy: Repository
         repositoryLikedDisposable?.dispose()
         repositoryLikedDisposable =
             if (!repository.isFavorited) {
@@ -186,12 +207,6 @@ class RepositoriesSearchViewModel(
         searchRepositoriesDisposable?.dispose()
         getFavoriteRepositoriesDisposable.dispose()
         repositoryLikedDisposable?.dispose()
-    }
-
-    fun updateRepositories() {
-        repositoriesListLiveData.value?.first?.let {
-            searchRepositories(it)
-        }
     }
 }
 

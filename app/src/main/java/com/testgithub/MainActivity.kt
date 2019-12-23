@@ -14,6 +14,7 @@ import com.testgithub.authorisation.AuthorizationViewModel
 import com.testgithub.authorisation.ShowFragmentEvent
 import com.testgithub.common.GlideApp
 import com.testgithub.extention.replaceFragment
+import com.testgithub.extention.toast
 import com.testgithub.repositories.main.MainRepositoriesFragment
 import kotlinx.android.synthetic.main.activity_main.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -61,8 +62,16 @@ class MainActivity : AppCompatActivity() {
                             false
                         )
                     else -> {
+                        //do nothing
                     }
                 }
+            }
+        )
+
+        viewModel.showErrorLiveData.observe(
+            this,
+            Observer { error ->
+                toast(error)
             }
         )
     }
@@ -71,6 +80,14 @@ class MainActivity : AppCompatActivity() {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == RC_SIGN_IN && resultCode == Activity.RESULT_OK) {
             viewModel.onSignIn()
+        }
+
+        if (requestCode == RC_SIGN_IN) {
+            if (resultCode == Activity.RESULT_OK) {
+                viewModel.onSignIn()
+            } else {
+                toast("Error sign in")
+            }
         }
     }
 
@@ -86,5 +103,4 @@ class MainActivity : AppCompatActivity() {
             userAvatarImageView.isVisible = false
         }
     }
-
 }

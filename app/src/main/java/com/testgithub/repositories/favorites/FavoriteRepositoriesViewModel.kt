@@ -13,6 +13,7 @@ class FavoriteRepositoriesViewModel(
     private val repositoriesSearchUseCase: RepositoriesSearchUseCase
 ) : ViewModel() {
     val repositoriesListLiveData = MutableLiveData<Pair<String, List<Repository>>>()
+    val showErrorLiveData = MutableLiveData<String>()
 
     var repositoriesList: ArrayList<Repository> = ArrayList()
     private var searchRepositoriesDisposable: Disposable? = null
@@ -38,6 +39,7 @@ class FavoriteRepositoriesViewModel(
                     },
                     {
                         Timber.e(it, "Error searchRepositories")
+                        showErrorLiveData.postValue("Error searchRepositories")
                     }
                 )
     }
@@ -54,6 +56,7 @@ class FavoriteRepositoriesViewModel(
                     },
                     {
                         Timber.e(it, "Error deleteFavoriteRepository")
+                        showErrorLiveData.postValue("Error deleteFavoriteRepository")
                     }
                 )
     }

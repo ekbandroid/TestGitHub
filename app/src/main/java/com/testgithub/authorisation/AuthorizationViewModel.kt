@@ -15,6 +15,7 @@ class AuthorizationViewModel(
 
     val showAvatarLiveData = MutableLiveData<Uri?>()
     val showFragmentLiveData = MutableLiveData<ShowFragmentEvent>()
+    val showErrorLiveData = MutableLiveData<String>()
 
     private var logoutDisposable: Disposable? = null
 
@@ -32,7 +33,10 @@ class AuthorizationViewModel(
                     {
                         setupView()
                     },
-                    { Timber.e("onLogout error") }
+                    {
+                        Timber.e("onLogout error")
+                        showErrorLiveData.postValue("Logout error")
+                    }
                 )
     }
 

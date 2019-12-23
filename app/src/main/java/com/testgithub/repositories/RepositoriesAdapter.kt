@@ -8,8 +8,8 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.testgithub.R
-import com.testgithub.common.TextUtils
 import com.testgithub.extention.getColorCompat
+import com.testgithub.extention.setSpannableText
 import com.testgithub.repositories.model.Repository
 import kotlinx.android.synthetic.main.item_repository.view.*
 
@@ -81,8 +81,8 @@ class RepositoryViewHolder(parent: ViewGroup) :
         } else {
             favoriteImageView.setImageResource(android.R.drawable.star_big_off)
         }
-        TextUtils.setSpannableText(
-            nameTextView,
+
+        nameTextView.setSpannableText(
             "${item.owner.login}/${item.name}",
             highligtedText,
             nameTextView.context.getColorCompat(
@@ -90,8 +90,7 @@ class RepositoryViewHolder(parent: ViewGroup) :
             )
         )
 
-        TextUtils.setSpannableText(
-            descriptionTextView,
+        descriptionTextView.setSpannableText(
             item.description ?: "",
             highligtedText,
             descriptionTextView.context.getColorCompat(
