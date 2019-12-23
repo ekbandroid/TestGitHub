@@ -41,15 +41,18 @@ class MainActivity : AppCompatActivity() {
 
         firebaseUser = auth.currentUser
 
-        toolbar.isVisible = firebaseUser != null
+        showToolbar(firebaseUser != null)
+
         toolbar.setNavigationOnClickListener {
             if (firebaseUser != null) {
                 replaceFragment(MainRepositoriesFragment())
             }
         }
         if (firebaseUser != null) {
-            currentUserTextView.text = firebaseUser?.displayName
-            replaceFragment(MainRepositoriesFragment())
+            firebaseUser?.let {
+                showCurrentUser(it)
+            }
+            replaceMainRepositoriesFragment()
         } else {
             signInButton.isVisible = true
             signOutButton.isVisible = false
@@ -73,7 +76,7 @@ class MainActivity : AppCompatActivity() {
                         currentUserLinearLayout.isVisible = false
                         signInButton.isVisible = true
                         signOutButton.isVisible = false
-                        toolbar.isVisible = false
+                        showToolbar(false)
                     }
                 }
                 .setNegativeButton(android.R.string.cancel) { _, _ -> }
@@ -98,7 +101,9 @@ class MainActivity : AppCompatActivity() {
                 signOutButton.isVisible = true
                 toolbar.isVisible = firebaseUser != null
 
-                replaceFragment(MainRepositoriesFragment())
+                showToolbar(firebaseUser != null)
+
+                replaceMainRepositoriesFragment()
 
                 // ...
             } else {
@@ -107,6 +112,29 @@ class MainActivity : AppCompatActivity() {
                 // response.getError().getErrorCode() and handle the error.
                 // ...
             }
+        }
+    }
+
+    private fun replaceMainRepositoriesFragment() {
+        replaceFragment(MainRepositoriesFragment())
+    }
+
+    private fun showCurrentUser(firebaseUser: FirebaseUser) {
+        currentUserLinearLayout.isVisible = true
+        firebaseUser.displayName?.let {
+            currentUserTextView.text = it
+        }
+        GlideApp.with(this)
+            .load(firebaseUser.photoUrl)
+            .apply(RequestOptions.circleCropTransform())
+            .into(userAvatarImageView)
+    }
+
+    private fun showToolbar(showNavigation: Boolean) {
+        if (showNavigation) {
+            toolbar.navigationIcon = getDrawable(R.drawable.ic_menu_back)
+        } else {
+            toolbar.navigationIcon = null
         }
     }
 }
