@@ -16,12 +16,12 @@ import kotlin.math.roundToInt
 class RepositoryDetailsFragment : Fragment() {
 
     companion object {
+        var selectedRepository: Repository? = null
+
         fun create(repository: Repository): RepositoryDetailsFragment {
             selectedRepository = repository
             return RepositoryDetailsFragment()
         }
-
-        var selectedRepository: Repository? = null
     }
 
     override fun onCreateView(

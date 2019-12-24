@@ -9,7 +9,6 @@ import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
 import timber.log.Timber
 
-
 class AuthorizationViewModel(
     private val authorizationUseCase: AuthorizationUseCase
 ) : ViewModel() {
@@ -43,7 +42,6 @@ class AuthorizationViewModel(
 
     fun onSignIn() = setupView()
 
-
     private fun setupView() {
         authorizationUseCase.getUser()?.let {
             showAvatarLiveData.postValue(it.photoUrl)
@@ -53,7 +51,6 @@ class AuthorizationViewModel(
         showAvatarLiveData.postValue(null)
         showFragmentLiveData.postValue(ShowFragmentEvent.AUTH)
     }
-
 
     override fun onCleared() {
         super.onCleared()

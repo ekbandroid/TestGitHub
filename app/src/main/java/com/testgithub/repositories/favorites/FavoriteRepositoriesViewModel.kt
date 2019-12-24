@@ -55,15 +55,15 @@ class FavoriteRepositoriesViewModel(
                 )
     }
 
-    override fun onCleared() {
-        super.onCleared()
-        getFavoriteRepositoriesDisposable.dispose()
-        searchRepositoriesDisposable?.dispose()
-    }
-
     fun onSearch(text: String) {
         repositoriesListLiveData.value?.let { (_, list) ->
             repositoriesListLiveData.postValue(text to list)
         }
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        getFavoriteRepositoriesDisposable.dispose()
+        searchRepositoriesDisposable?.dispose()
     }
 }

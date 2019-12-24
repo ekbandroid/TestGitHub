@@ -9,10 +9,11 @@ object DatabaseModule {
 
     fun create() = module {
         single {
-            Room
-                .databaseBuilder(get(), TestGitHubDatabase::class.java,
-                    DATABASE_NAME
-                )
+            Room.databaseBuilder(
+                get(),
+                TestGitHubDatabase::class.java,
+                DATABASE_NAME
+            )
                 .fallbackToDestructiveMigration()
                 .setQueryExecutor(Executors.newCachedThreadPool())
                 .build()

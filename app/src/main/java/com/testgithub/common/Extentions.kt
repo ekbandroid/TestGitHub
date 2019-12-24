@@ -1,4 +1,4 @@
-package com.testgithub.extention
+package com.testgithub.common
 
 import android.app.Activity
 import android.content.Context
@@ -14,6 +14,7 @@ import androidx.annotation.IdRes
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
+import java.util.*
 
 fun FragmentActivity.replaceFragment(
     fragment: Fragment,
@@ -66,11 +67,12 @@ fun TextView.setSpannableText(text: String, highlightText: String, color: Int) {
         return
     }
     val spannable = SpannableString(text)
-    val spannableLowerCase = SpannableString(text.toLowerCase())
+    val spannableLowerCase = SpannableString(text.toLowerCase(Locale.getDefault()))
     var indexOfPath = -1
     do {
         indexOfPath =
-            spannableLowerCase.toString().indexOf(highlightText.toLowerCase(), indexOfPath + 1)
+            spannableLowerCase.toString()
+                .indexOf(highlightText.toLowerCase(Locale.getDefault()), indexOfPath + 1)
         if (indexOfPath != -1) {
             spannable.setSpan(
                 ForegroundColorSpan(color),

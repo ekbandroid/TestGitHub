@@ -8,11 +8,10 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.testgithub.R
-import com.testgithub.extention.getColorCompat
-import com.testgithub.extention.setSpannableText
+import com.testgithub.common.getColorCompat
+import com.testgithub.common.setSpannableText
 import com.testgithub.repositories.model.Repository
 import kotlinx.android.synthetic.main.item_repository.view.*
-
 
 private const val VIEW_TYPE_ITEM = 0
 private const val VIEW_TYPE_LOADING = 1

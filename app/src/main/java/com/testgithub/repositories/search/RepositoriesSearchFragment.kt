@@ -10,8 +10,8 @@ import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.testgithub.R
 import com.testgithub.common.MyError
-import com.testgithub.extention.addFragment
-import com.testgithub.extention.toast
+import com.testgithub.common.addFragment
+import com.testgithub.common.toast
 import com.testgithub.repositories.OnBottomReachedListener
 import com.testgithub.repositories.RepositoriesAdapter
 import com.testgithub.repositories.detail.RepositoryDetailsFragment

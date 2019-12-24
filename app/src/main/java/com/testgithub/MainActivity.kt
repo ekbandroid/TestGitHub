@@ -14,8 +14,8 @@ import com.testgithub.authorization.AuthorizationViewModel
 import com.testgithub.authorization.ShowFragmentEvent
 import com.testgithub.common.GlideApp
 import com.testgithub.common.MyError
-import com.testgithub.extention.replaceFragment
-import com.testgithub.extention.toast
+import com.testgithub.common.replaceFragment
+import com.testgithub.common.toast
 import com.testgithub.repositories.main.MainRepositoriesFragment
 import kotlinx.android.synthetic.main.activity_main.*
 import org.koin.androidx.viewmodel.ext.android.viewModel

@@ -8,7 +8,7 @@ import android.view.inputmethod.EditorInfo
 import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.Fragment
 import com.testgithub.R
-import com.testgithub.extention.hideKeyboard
+import com.testgithub.common.hideKeyboard
 import kotlinx.android.synthetic.main.fragment_repositories_main.*
 
 
