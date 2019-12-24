@@ -26,7 +26,6 @@ class RepositoriesSearchViewModel(
     val showErrorLiveData = MutableLiveData<MyError>()
 
     private var page = FIRST_PAGE
-    private var repositoriesList: ArrayList<Repository> = ArrayList()
     private var searchRepositoriesDisposable: Disposable? = null
     private var searchEventsDisposable: Disposable
     private var getFavoriteRepositoriesDisposable: Disposable
@@ -54,21 +53,21 @@ class RepositoriesSearchViewModel(
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
                     { repositoryList ->
-                        repositoriesList = ArrayList(repositoriesList.map {
-                            it.copy(isFavorite = false)
-                        })
-
-                        repositoryList.forEach { favoriteRepository ->
-                            repositoriesList.filter {
-                                it.id == favoriteRepository.id
-                            }
-                                .forEach {
-                                    repositoriesList[repositoriesList.indexOf(it)] =
-                                        it.copy(isFavorite = true)
+                        with(repositoriesListLiveData) {
+                            value?.let { (searchedText, repositories) ->
+                                val replacedRepositoriesList =
+                                    ArrayList(repositories.map { it?.copy(isFavorite = false) })
+                                repositoryList.forEach { favoriteRepository ->
+                                    replacedRepositoriesList
+                                        .filter { it?.id == favoriteRepository.id }
+                                        .forEach {
+                                            replacedRepositoriesList[
+                                                    replacedRepositoriesList.indexOf(it)
+                                            ] = it?.copy(isFavorite = true)
+                                        }
                                 }
-                        }
-                        repositoriesListLiveData.value?.first?.let {
-                            repositoriesListLiveData.postValue(it to repositoriesList)
+                                postValue(searchedText to replacedRepositoriesList)
+                            }
                         }
                     },
                     {
@@ -107,11 +106,9 @@ class RepositoriesSearchViewModel(
                 .subscribe(
                     { repositoryList ->
                         showProgressLiveData.postValue(false)
-                        repositoriesList.clear()
                         page = FIRST_PAGE
                         Timber.d("searchRepositories result $repositoryList")
-                        repositoriesList.addAll(repositoryList)
-                        repositoriesListLiveData.postValue(searchText to repositoriesList)
+                        repositoriesListLiveData.postValue(searchText to repositoryList)
                     },
                     {
                         showProgressLiveData.postValue(false)
@@ -141,37 +138,39 @@ class RepositoriesSearchViewModel(
     }
 
     private fun getNext(event: NextEvent) {
-        if (repositoriesList.isEmpty()) return
-        searchRepositoriesDisposable?.dispose()
-        searchRepositoriesDisposable =
-            repositoriesUseCase.searchRepositories(
-                event.searchText,
-                event.page,
-                PAGE_ITEMS_COUNT
-            )
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(
-                    { repositoryList ->
-                        repositoriesList.addAll(repositoryList)
-                        page = event.page
-                        Timber.d("searchRepositories repositoriesList.size ${repositoriesList.size}")
-                        repositoriesListLiveData.postValue(event.searchText to repositoriesList)
-                    },
-                    {
-                        Timber.e(it, "Error getNextPage")
-                        repositoriesListLiveData.value?.let { (searchText, list) ->
-                            if (list.size >= PAGE_ITEMS_COUNT) {
-                                if (list[list.size - 1] == null) {
-                                    repositoriesListLiveData.postValue(
-                                        searchText to list.subList(0, list.size - 2)
+        repositoriesListLiveData.value?.let { (searchText, repositoriesList) ->
+            if (repositoriesList.isEmpty()) return
+            searchRepositoriesDisposable?.dispose()
+            searchRepositoriesDisposable =
+                repositoriesUseCase.searchRepositories(
+                    event.searchText,
+                    event.page,
+                    PAGE_ITEMS_COUNT
+                )
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(
+                        { repositoryList ->
+                            val updatedRepositories = ArrayList(repositoriesList).apply {
+                                removeAll(listOf(null))
+                                addAll(repositoryList)
+                            }
+                            page = event.page
+                            Timber.d("searchRepositories repositoriesList.size ${updatedRepositories.size}")
+                            repositoriesListLiveData.postValue(event.searchText to updatedRepositories)
+                        },
+                        {
+                            Timber.e(it, "Error getNextPage")
+                            repositoriesListLiveData.postValue(
+                                searchText to ArrayList(repositoriesList).apply {
+                                    removeAll(
+                                        listOf(null)
                                     )
                                 }
-                            }
+                            )
                         }
-                    }
-                )
-
+                    )
+        }
     }
 
     fun onRepositoryLiked(repository: Repository) {
@@ -184,16 +183,20 @@ class RepositoriesSearchViewModel(
             } else {
                 repositoryCopy = repository.copy(isFavorite = false)
                 repositoriesUseCase.deleteFavoriteRepository(repository)
-
             }
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
                     {
-                        val index = repositoriesList.indexOf(repository)
-                        repositoriesList[index] = repositoryCopy
-                        repositoriesListLiveData.value?.first?.let {
-                            repositoriesListLiveData.postValue(it to repositoriesList)
+                        with(repositoriesListLiveData) {
+                            value?.let { (searchedText, repositoriesList) ->
+                                val updatedRepositoriesList = ArrayList(repositoriesList)
+                                val index = updatedRepositoriesList.indexOf(repository)
+                                if (index > -1) {
+                                    updatedRepositoriesList[index] = repositoryCopy
+                                    repositoriesListLiveData.postValue(searchedText to updatedRepositoriesList)
+                                }
+                            }
                         }
                     },
                     {
