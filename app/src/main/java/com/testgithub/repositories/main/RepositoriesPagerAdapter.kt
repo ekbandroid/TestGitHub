@@ -8,6 +8,7 @@ import com.testgithub.R
 import com.testgithub.repositories.favorites.FavoriteRepositoriesFragment
 import com.testgithub.repositories.search.RepositoriesSearchFragment
 
+@Suppress("DEPRECATION")
 class RepositoriesPagerAdapter(
     fm: FragmentManager,
     context: Context

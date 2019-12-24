@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "1097206841747",
+    "firebase_url": "https://testgithub-3187f.firebaseio.com",
+    "project_id": "testgithub-3187f",
+    "storage_bucket": "testgithub-3187f.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1097206841747:android:c6814977ee343bff17a866",
+        "android_client_info": {
+          "package_name": "com.testgithub"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1097206841747-033fgeos22qgqga5ueespdof3529uaun.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDu1BCVJ-eRImyevi-7zAuj-QieO2-zWnU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1097206841747-033fgeos22qgqga5ueespdof3529uaun.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

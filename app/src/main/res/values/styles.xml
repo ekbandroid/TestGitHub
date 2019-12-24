@@ -10,4 +10,86 @@
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
+    <style name="Base.TextAppearance" parent="TextAppearance.AppCompat">
+        <item name="android:textSize">@dimen/font_size_14</item>
+        <item name="android:textColor">@color/primary</item>
+        <item name="android:textColorPrimary">@color/primary</item>
+        <item name="android:textColorHint">@color/primary_light</item>
+        <item name="android:textColorHighlight">@color/primary</item>
+        <item name="android:textColorLink">@color/secondary</item>
+        <item name="android:textColorSecondary">@color/white</item>
+    </style>
+
+    <style name="Base.TextAppearance.Bold22">
+        <item name="android:textColor">@color/primary</item>
+        <item name="android:textSize">@dimen/font_size_22</item>
+    </style>
+
+    <style name="Base.TextAppearance.Light22">
+        <item name="android:textColor">@color/primary</item>
+        <item name="android:textSize">@dimen/font_size_22</item>
+    </style>
+
+    <style name="Base.TextAppearance.Medium20">
+        <item name="android:textColor">@color/primary</item>
+        <item name="android:textSize">@dimen/font_size_20</item>
+    </style>
+
+    <style name="Base.TextAppearance.Bold16">
+        <item name="android:textColor">@color/primary</item>
+        <item name="android:textSize">@dimen/font_size_16</item>
+    </style>
+
+    <style name="Base.TextAppearance.Medium16">
+        <item name="android:textColor">@color/primary</item>
+        <item name="android:textSize">@dimen/font_size_16</item>
+    </style>
+
+    <style name="Base.TextAppearance.Regular16">
+        <item name="android:textColor">@color/primary</item>
+        <item name="android:textSize">@dimen/font_size_16</item>
+    </style>
+    <style name="Base.TextAppearance.Regular20">
+        <item name="android:textColor">@color/primary</item>
+        <item name="android:textSize">@dimen/font_size_20</item>
+    </style>
+
+    <style name="Base.TextAppearance.Medium14">
+        <item name="android:textColor">@color/primary</item>
+        <item name="android:textSize">@dimen/font_size_14</item>
+    </style>
+
+    <style name="Base.TextAppearance.Medium14.AllCaps">
+        <item name="android:textAllCaps">true</item>
+    </style>
+
+    <style name="Base.TextAppearance.Regular14">
+        <item name="android:textColor">@color/primary</item>
+        <item name="android:textSize">@dimen/font_size_14</item>
+    </style>
+
+    <style name="Base.TextAppearance.Medium12">
+        <item name="android:textColor">@color/primary</item>
+        <item name="android:textSize">@dimen/font_size_12</item>
+    </style>
+
+    <style name="Base.TextAppearance.Medium12.AllCaps">
+        <item name="android:textAllCaps">true</item>
+    </style>
+
+    <style name="Base.TextAppearance.Regular12">
+        <item name="android:textColor">@color/primary</item>
+        <item name="android:textSize">@dimen/font_size_12</item>
+    </style>
+
+    <style name="ToolbarStyle">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">?android:attr/actionBarSize</item>
+        <item name="android:contentInsetStart">0dp</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:textAppearance">@style/Base.TextAppearance.Medium20</item>
+        <item name="android:background">@drawable/toolbar_bottom_divider</item>
+        <item name="android:textColor">@color/primary</item>
+    </style>
+
 </resources>
