@@ -6,9 +6,7 @@ import androidx.room.PrimaryKey
 import com.testgithub.db.FavoriteRepositoryEntity.Companion.TABLE_NAME
 import org.jetbrains.annotations.NotNull
 
-@Entity(
-    tableName = TABLE_NAME
-)
+@Entity(tableName = TABLE_NAME)
 class FavoriteRepositoryEntity(
     @PrimaryKey
     @NotNull
@@ -42,6 +40,5 @@ class FavoriteRepositoryEntity(
         const val COLUMN_OWNER_ID = "owner_id"
         const val COLUMN_OWNER_LOGIN = "owner_login"
         const val COLUMN_OWNER_AVATAR_URL = "owner_avatar_url"
-
     }
 }

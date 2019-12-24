@@ -59,7 +59,7 @@ class FavoriteRepositoriesFragment : Fragment(), OnSearchTextListener {
             repositoriesListLiveData.observe(
                 viewLifecycleOwner,
                 Observer { (searchText, repositoriesList) ->
-                    repositoriesAdapter.highligtedText = searchText
+                    repositoriesAdapter.highlightedText = searchText
                     repositoriesAdapter.submitList(repositoriesList)
                     repositoriesAdapter.notifyDataSetChanged()
                 }

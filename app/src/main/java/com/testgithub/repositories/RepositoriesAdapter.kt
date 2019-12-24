@@ -19,7 +19,7 @@ private const val VIEW_TYPE_LOADING = 1
 class RepositoriesAdapter : ListAdapter<Repository, RecyclerView.ViewHolder>(asyncDifferConfig) {
     var itemClickListener: ((repository: Repository) -> Unit)? = null
     var favoriteClickListener: ((repository: Repository) -> Unit)? = null
-    var highligtedText = ""
+    var highlightedText = ""
     var onBottomReachedListener: OnBottomReachedListener? = null
 
     companion object {
@@ -51,7 +51,7 @@ class RepositoriesAdapter : ListAdapter<Repository, RecyclerView.ViewHolder>(asy
                     onBottomReachedListener?.onBottomReached(position)
                 }
                 val item = getItem(position)
-                holder.bind(item, highligtedText)
+                holder.bind(item, highlightedText)
             }
         }
     }
@@ -74,7 +74,7 @@ class RepositoryViewHolder(parent: ViewGroup) :
     private val favoriteImageView: ImageView = itemView.favoriteImageView
     private val descriptionTextView: TextView = itemView.descriptionTextView
 
-    fun bind(item: Repository, highligtedText: String) {
+    fun bind(item: Repository, highlightedText: String) {
         if (item.isFavorite) {
             favoriteImageView.setImageResource(android.R.drawable.star_big_on)
         } else {
@@ -83,7 +83,7 @@ class RepositoryViewHolder(parent: ViewGroup) :
 
         nameTextView.setSpannableText(
             "${item.owner.login}/${item.name}",
-            highligtedText,
+            highlightedText,
             nameTextView.context.getColorCompat(
                 R.color.colorAccent
             )
@@ -91,7 +91,7 @@ class RepositoryViewHolder(parent: ViewGroup) :
 
         descriptionTextView.setSpannableText(
             item.description ?: "",
-            highligtedText,
+            highlightedText,
             descriptionTextView.context.getColorCompat(
                 R.color.colorAccent
             )

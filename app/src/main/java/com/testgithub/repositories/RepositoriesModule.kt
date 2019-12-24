@@ -19,7 +19,9 @@ object RepositoriesModule {
 
             return@single retrofit.create(GitHubApi::class.java)
         }
+
         single { RepositoriesUseCase(get(), get()) }
+
         viewModel {
             RepositoriesSearchViewModel(
                 get()

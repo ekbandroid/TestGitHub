@@ -4,21 +4,6 @@ import com.testgithub.repositories.model.Owner
 import com.testgithub.repositories.model.Repository
 
 object RepositoryConverter {
-    fun fromDatabase(repository: FavoriteRepositoryEntity): Repository =
-        Repository(
-            id = repository.id,
-            name = repository.name,
-            owner = Owner(
-                id = repository.ownerId,
-                login = repository.ownerLogin,
-                avatarUrl = repository.ownerAvatarUrl
-            ),
-            description = repository.description,
-            forks = repository.forks,
-            stars = repository.score,
-            dateCreate = repository.createdAt
-        )
-
     fun fromDatabase(repositories: List<FavoriteRepositoryEntity>): List<Repository> =
         repositories.map {
             Repository(
@@ -49,5 +34,4 @@ object RepositoryConverter {
             score = repository.stars,
             createdAt = repository.dateCreate
         )
-
 }
