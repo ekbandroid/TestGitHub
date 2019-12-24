@@ -43,6 +43,7 @@ class FavoriteRepositoriesFragment : Fragment(), OnSearchTextListener {
                 { repository ->
                     AlertDialog.Builder(requireContext())
                         .setTitle(R.string.delete_alert_dialog_title)
+                        .setMessage(R.string.delete_alert_dialog)
                         .setPositiveButton(android.R.string.ok) { _, _ ->
                             viewModel.onDeleteRepository(repository)
                         }

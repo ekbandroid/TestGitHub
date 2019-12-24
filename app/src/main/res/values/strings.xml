@@ -4,8 +4,10 @@
     <string name="tab_favorite">Favorites</string>
     <string name="repository_details_title">Details</string>
     <string name="enter_text_hint">enter text to search</string>
-    <string name="delete_alert_dialog_title">Delete from favorites?</string>
-    <string name="sign_out_alert_dialog_title">Sign out? All application data will be deleted</string>
+    <string name="delete_alert_dialog_title">Delete repository</string>
+    <string name="delete_alert_dialog">Delete repository from favorites?</string>
+    <string name="sign_out_alert_dialog_title">Sign out</string>
+    <string name="sign_out_alert_dialog">All application data will be deleted</string>
     <string name="welcome">GitHub test application. Please log in to your Google Account to get started</string>
     <string name="login_repository_name_template">%1$s/%2$s</string>
     <string name="sign_in_error">Error login. Try again later</string>

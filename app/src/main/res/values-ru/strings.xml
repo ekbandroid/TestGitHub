@@ -1,0 +1,19 @@
+<resources>
+    <string name="app_name">TestGitHub</string>
+    <string name="tab_search">Поиск репозиториев</string>
+    <string name="tab_favorite">Сохраненные</string>
+    <string name="repository_details_title">Детальный вид репозитория</string>
+    <string name="enter_text_hint">введите текст для поиска</string>
+    <string name="delete_alert_dialog_title">Удаление репозитория</string>
+    <string name="delete_alert_dialog">Удалить репозиторий из списка сохраненных?</string>
+    <string name="sign_out_alert_dialog_title">Выход</string>
+    <string name="sign_out_alert_dialog">При деавторизации аккаунта все данные приложения будут удалены</string>
+    <string name="welcome">GitHub test application. Используйте Google аккаунт для входа</string>
+    <string name="login_repository_name_template">%1$s/%2$s</string>
+    <string name="sign_in_error">Ошибка авторизации. Повторите попытку позже…</string>
+    <string name="sign_out_error">Ошибка деавторизации. Повторите попытку позже…</string>
+    <string name="load_repositories_error">Ошибка загрузки списка репозиториев. Повторите попытку позже…</string>
+    <string name="load_favorite_repositories_error">Ошибка загрузки сохраненных репозиториев</string>
+    <string name="delete_favorite_repository_error">При удалении репозитория возникла ошибка…</string>
+    <string name="unknown_error">Ошибка</string>
+</resources>

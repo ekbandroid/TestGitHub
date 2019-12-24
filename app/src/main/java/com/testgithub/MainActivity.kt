@@ -32,6 +32,7 @@ class MainActivity : AppCompatActivity() {
         userAvatarImageView.setOnClickListener {
             AlertDialog.Builder(this)
                 .setTitle(R.string.sign_out_alert_dialog_title)
+                .setMessage(R.string.sign_out_alert_dialog)
                 .setPositiveButton(android.R.string.ok) { _, _ ->
                     viewModel.onLogout()
                 }
@@ -53,12 +54,14 @@ class MainActivity : AppCompatActivity() {
                         ShowFragmentEvent.AUTH ->
                             replaceFragment(
                                 AuthorizationFragment(),
-                                container.id
+                                container.id,
+                                false
                             )
                         ShowFragmentEvent.SEARCH ->
                             replaceFragment(
                                 MainRepositoriesFragment(),
-                                container.id
+                                container.id,
+                                false
                             )
                         else -> {
                             //do nothing
