@@ -1,10 +1,8 @@
-package com.testgithub.common
+package com.testgithub.db
 
 import androidx.room.Database
 import androidx.room.RoomDatabase
-import com.testgithub.common.TestGitHubDatabase.Companion.DATABASE_VERSION
-import com.testgithub.db.FavoriteRepositoriesDao
-import com.testgithub.db.FavoriteRepositoryEntity
+import com.testgithub.db.TestGitHubDatabase.Companion.DATABASE_VERSION
 
 @Suppress("TooManyFunctions")
 @Database(
