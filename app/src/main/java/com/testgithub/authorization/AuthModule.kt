@@ -1,4 +1,4 @@
-package com.testgithub.authorisation
+package com.testgithub.authorization
 
 import com.google.firebase.auth.FirebaseAuth
 import org.koin.androidx.viewmodel.dsl.viewModel

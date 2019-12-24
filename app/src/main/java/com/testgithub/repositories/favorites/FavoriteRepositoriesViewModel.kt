@@ -2,7 +2,8 @@ package com.testgithub.repositories.favorites
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.testgithub.repositories.RepositoriesSearchUseCase
+import com.testgithub.common.MyError
+import com.testgithub.repositories.RepositoriesUseCase
 import com.testgithub.repositories.model.Repository
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
@@ -10,10 +11,10 @@ import io.reactivex.schedulers.Schedulers
 import timber.log.Timber
 
 class FavoriteRepositoriesViewModel(
-    private val repositoriesSearchUseCase: RepositoriesSearchUseCase
+    private val repositoriesUseCase: RepositoriesUseCase
 ) : ViewModel() {
     val repositoriesListLiveData = MutableLiveData<Pair<String, List<Repository>>>()
-    val showErrorLiveData = MutableLiveData<String>()
+    val showErrorLiveData = MutableLiveData<MyError>()
 
     var repositoriesList: ArrayList<Repository> = ArrayList()
     private var searchRepositoriesDisposable: Disposable? = null
@@ -21,7 +22,7 @@ class FavoriteRepositoriesViewModel(
 
     init {
         getFavoriteRepositoriesDisposable =
-            repositoriesSearchUseCase.getFavoriteRepositories()
+            repositoriesUseCase.getFavoriteRepositories()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
@@ -32,14 +33,14 @@ class FavoriteRepositoriesViewModel(
                         if (repositoriesListLiveData.value == null) {
                             repositoriesListLiveData.postValue("" to repositoriesList)
                         } else {
-                            repositoriesListLiveData.value?.let { (text, list) ->
+                            repositoriesListLiveData.value?.let { (text, _) ->
                                 repositoriesListLiveData.postValue(text to repositoriesList)
                             }
                         }
                     },
                     {
-                        Timber.e(it, "Error searchRepositories")
-                        showErrorLiveData.postValue("Error searchRepositories")
+                        Timber.e(it, "Error getFavoriteRepositories")
+                        showErrorLiveData.postValue(MyError.LOAD_FAVORITE_REPOSITORIES_ERROR)
                     }
                 )
     }
@@ -47,7 +48,7 @@ class FavoriteRepositoriesViewModel(
     fun onDeleteRepository(repository: Repository) {
         searchRepositoriesDisposable?.dispose()
         searchRepositoriesDisposable =
-            repositoriesSearchUseCase.deleteFavoriteRepository(repository)
+            repositoriesUseCase.deleteFavoriteRepository(repository)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
@@ -56,7 +57,7 @@ class FavoriteRepositoriesViewModel(
                     },
                     {
                         Timber.e(it, "Error deleteFavoriteRepository")
-                        showErrorLiveData.postValue("Error deleteFavoriteRepository")
+                        showErrorLiveData.postValue(MyError.DELETE_FAVORITE_REPOSITORY_ERROR)
                     }
                 )
     }

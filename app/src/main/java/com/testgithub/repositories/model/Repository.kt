@@ -10,5 +10,5 @@ data class Repository(
     @SerializedName("forks") val forks: Int = 0,
     @SerializedName("score") val stars: Float = 0F,
     @SerializedName("created_at") val dateCreate: String = "",
-    val isFavorited:Boolean = false
+    val isFavorite: Boolean = false
 )

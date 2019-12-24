@@ -1,4 +1,4 @@
-package com.testgithub.authorisation
+package com.testgithub.authorization
 
 import android.os.Bundle
 import android.view.LayoutInflater

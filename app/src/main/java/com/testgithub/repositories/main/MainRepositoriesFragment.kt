@@ -32,17 +32,19 @@ class MainRepositoriesFragment : Fragment() {
             searchClicked()
         }
 
-        searchEditText.setOnEditorActionListener { _, actionId, _ ->
-            if (actionId == EditorInfo.IME_ACTION_SEARCH) {
-                searchClicked()
-                true
-            } else {
-                false
+        with(searchEditText) {
+            setOnEditorActionListener { _, actionId, _ ->
+                if (actionId == EditorInfo.IME_ACTION_SEARCH) {
+                    searchClicked()
+                    true
+                } else {
+                    false
+                }
             }
-        }
-
-        searchEditText.doAfterTextChanged { text ->
-            (repositoriesPagerAdapter.getItem(1) as OnSearchTextListener).onSearchText(text.toString())
+            doAfterTextChanged { text ->
+                // динамическое выделение текста из searchEditText, только для списка сохраненных репозиториев
+                (repositoriesPagerAdapter.getItem(1) as OnSearchTextListener).onSearchText(text.toString())
+            }
         }
     }
 

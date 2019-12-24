@@ -76,7 +76,7 @@ class RepositoryViewHolder(parent: ViewGroup) :
     private val descriptionTextView: TextView = itemView.descriptionTextView
 
     fun bind(item: Repository, highligtedText: String) {
-        if (item.isFavorited) {
+        if (item.isFavorite) {
             favoriteImageView.setImageResource(android.R.drawable.star_big_on)
         } else {
             favoriteImageView.setImageResource(android.R.drawable.star_big_off)

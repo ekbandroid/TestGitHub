@@ -1,0 +1,8 @@
+package com.testgithub.common
+
+enum class MyError {
+    SIGN_OUT_ERROR,
+    LOAD_REPOSITORIES_ERROR,
+    LOAD_FAVORITE_REPOSITORIES_ERROR,
+    DELETE_FAVORITE_REPOSITORY_ERROR
+}

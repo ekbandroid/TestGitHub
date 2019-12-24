@@ -1,4 +1,4 @@
-package com.testgithub.authorisation
+package com.testgithub.authorization
 
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
@@ -21,5 +21,4 @@ class AuthorizationUseCase(
         }
 
     fun getUser(): FirebaseUser? = fireBaseAuth.currentUser
-
 }

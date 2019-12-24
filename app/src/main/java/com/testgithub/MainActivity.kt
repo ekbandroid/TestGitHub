@@ -9,10 +9,11 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
 import androidx.lifecycle.Observer
 import com.bumptech.glide.request.RequestOptions
-import com.testgithub.authorisation.AuthorizationFragment
-import com.testgithub.authorisation.AuthorizationViewModel
-import com.testgithub.authorisation.ShowFragmentEvent
+import com.testgithub.authorization.AuthorizationFragment
+import com.testgithub.authorization.AuthorizationViewModel
+import com.testgithub.authorization.ShowFragmentEvent
 import com.testgithub.common.GlideApp
+import com.testgithub.common.MyError
 import com.testgithub.extention.replaceFragment
 import com.testgithub.extention.toast
 import com.testgithub.repositories.main.MainRepositoriesFragment
@@ -38,55 +39,52 @@ class MainActivity : AppCompatActivity() {
                 .show()
         }
 
-        viewModel.showAvatarLiveData.observe(
-            this,
-            Observer { url ->
-                showUserAvatar(url)
-            }
-        )
-
-        viewModel.showFragmentLiveData.observe(
-            this,
-            Observer { event ->
-                when (event) {
-                    ShowFragmentEvent.AUTH ->
-                        replaceFragment(
-                            AuthorizationFragment(),
-                            container.id,
-                            false
-                        )
-                    ShowFragmentEvent.SEARCH ->
-                        replaceFragment(
-                            MainRepositoriesFragment(),
-                            container.id,
-                            false
-                        )
-                    else -> {
-                        //do nothing
+        with(viewModel) {
+            showAvatarLiveData.observe(
+                this@MainActivity,
+                Observer { url ->
+                    showUserAvatar(url)
+                }
+            )
+            showFragmentLiveData.observe(
+                this@MainActivity,
+                Observer { event ->
+                    when (event) {
+                        ShowFragmentEvent.AUTH ->
+                            replaceFragment(
+                                AuthorizationFragment(),
+                                container.id
+                            )
+                        ShowFragmentEvent.SEARCH ->
+                            replaceFragment(
+                                MainRepositoriesFragment(),
+                                container.id
+                            )
+                        else -> {
+                            //do nothing
+                        }
                     }
                 }
-            }
-        )
-
-        viewModel.showErrorLiveData.observe(
-            this,
-            Observer { error ->
-                toast(error)
-            }
-        )
+            )
+            showErrorLiveData.observe(
+                this@MainActivity,
+                Observer { error ->
+                    when (error) {
+                        MyError.SIGN_OUT_ERROR -> toast(R.string.sign_out_error)
+                        else -> toast(R.string.unknown_error)
+                    }
+                }
+            )
+        }
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        if (requestCode == RC_SIGN_IN && resultCode == Activity.RESULT_OK) {
-            viewModel.onSignIn()
-        }
-
         if (requestCode == RC_SIGN_IN) {
             if (resultCode == Activity.RESULT_OK) {
                 viewModel.onSignIn()
             } else {
-                toast("Error sign in")
+                toast(R.string.sign_in_error)
             }
         }
     }

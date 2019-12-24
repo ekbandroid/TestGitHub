@@ -13,7 +13,6 @@ import com.testgithub.repositories.model.Repository
 import kotlinx.android.synthetic.main.fragment_repository_details.*
 import kotlin.math.roundToInt
 
-
 class RepositoryDetailsFragment : Fragment() {
 
     companion object {
@@ -35,7 +34,11 @@ class RepositoryDetailsFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         toolbar.setNavigationOnClickListener { activity?.onBackPressed() }
         selectedRepository?.let { repository ->
-            nameTextView.text = "${repository.owner.login}/${repository.name}"
+            nameTextView.text = getString(
+                R.string.login_repository_name_template,
+                repository.owner.login,
+                repository.name
+            )
             forksTextView.text = repository.forks.toString()
             starsTextView.text = repository.stars.roundToInt().toString()
             dateCreateTextView.text = TextUtils.convertServerDate(repository.dateCreate)

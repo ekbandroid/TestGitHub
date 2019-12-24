@@ -9,6 +9,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.testgithub.R
+import com.testgithub.common.MyError
 import com.testgithub.extention.addFragment
 import com.testgithub.extention.toast
 import com.testgithub.repositories.OnBottomReachedListener
@@ -32,57 +33,57 @@ class RepositoriesSearchFragment : Fragment(), OnSearchTextListener {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        repositoriesAdapter.onBottomReachedListener = object :
-            OnBottomReachedListener {
-            override fun onBottomReached(position: Int) {
-                viewModel.listScrolledToEnd()
+        with(repositoriesAdapter) {
+            onBottomReachedListener = object : OnBottomReachedListener {
+                override fun onBottomReached(position: Int) {
+                    viewModel.listScrolledToEnd()
+                }
             }
+            favoriteClickListener =
+                { repository -> viewModel.onRepositoryLiked(repository) }
+            itemClickListener =
+                { repository -> addFragment(RepositoryDetailsFragment.create(repository)) }
         }
-        repositoriesRecyclerView.itemAnimator = null
-        repositoriesRecyclerView.adapter = repositoriesAdapter
-        repositoriesRecyclerView.layoutManager = LinearLayoutManager(context)
-        repositoriesAdapter.favoriteClickListener =
-            { repository -> viewModel.onRepositoryLiked(repository) }
-        repositoriesAdapter.itemClickListener =
-            { repository ->
-                addFragment(RepositoryDetailsFragment.create(repository))
-            }
-        swipeRefreshLayout.setOnRefreshListener {
-            viewModel.updateRepositories()
+
+        with(repositoriesRecyclerView) {
+            itemAnimator = null
+            adapter = repositoriesAdapter
+            layoutManager = LinearLayoutManager(context)
         }
-    }
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        viewModel.repositoriesListLiveData.observe(
-            this,
-            Observer { (searchText, repositoriesList) ->
-                repositoriesAdapter.highligtedText = searchText
-                repositoriesAdapter.submitList(repositoriesList)
-                repositoriesAdapter.notifyDataSetChanged()
-            }
-        )
+        swipeRefreshLayout.setOnRefreshListener { viewModel.updateRepositories() }
 
-        viewModel.showProgressLiveData.observe(
-            this,
-            Observer { isShow ->
-                loadingStateView.isVisible = isShow
-            }
-        )
-
-        viewModel.showSwipeRefreshLiveData.observe(
-            this,
-            Observer { isShow ->
-                swipeRefreshLayout.isRefreshing = isShow
-            }
-        )
-
-        viewModel.showErrorLiveData.observe(
-            this,
-            Observer { error ->
-                toast(error)
-            }
-        )
+        with(viewModel) {
+            repositoriesListLiveData.observe(
+                viewLifecycleOwner,
+                Observer { (searchText, repositoriesList) ->
+                    repositoriesAdapter.highligtedText = searchText
+                    repositoriesAdapter.submitList(repositoriesList)
+                    repositoriesAdapter.notifyDataSetChanged()
+                }
+            )
+            showProgressLiveData.observe(
+                viewLifecycleOwner,
+                Observer { isShow ->
+                    loadingStateView.isVisible = isShow
+                }
+            )
+            showSwipeRefreshLiveData.observe(
+                viewLifecycleOwner,
+                Observer { isShow ->
+                    swipeRefreshLayout.isRefreshing = isShow
+                }
+            )
+            showErrorLiveData.observe(
+                viewLifecycleOwner,
+                Observer { error ->
+                    when (error) {
+                        MyError.LOAD_REPOSITORIES_ERROR -> toast(R.string.load_repositories_error)
+                        else -> toast(R.string.unknown_error)
+                    }
+                }
+            )
+        }
     }
 
     override fun onSearchText(text: String) {

@@ -2,7 +2,8 @@ package com.testgithub.repositories.search
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.testgithub.repositories.RepositoriesSearchUseCase
+import com.testgithub.common.MyError
+import com.testgithub.repositories.RepositoriesUseCase
 import com.testgithub.repositories.model.Repository
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
@@ -17,12 +18,12 @@ private const val ITEMS_COUNT_LIMIT = 1000
 private const val DEBOUNCE_MS = 1000L
 
 class RepositoriesSearchViewModel(
-    private val repositoriesSearchUseCase: RepositoriesSearchUseCase
+    private val repositoriesUseCase: RepositoriesUseCase
 ) : ViewModel() {
     val repositoriesListLiveData = MutableLiveData<Pair<String, List<Repository?>>>()
     val showProgressLiveData = MutableLiveData<Boolean>()
     val showSwipeRefreshLiveData = MutableLiveData<Boolean>()
-    val showErrorLiveData = MutableLiveData<String>()
+    val showErrorLiveData = MutableLiveData<MyError>()
 
     private var page = FIRST_PAGE
     private var repositoriesList: ArrayList<Repository> = ArrayList()
@@ -48,13 +49,13 @@ class RepositoriesSearchViewModel(
                 )
 
         getFavoriteRepositoriesDisposable =
-            repositoriesSearchUseCase.getFavoriteRepositories()
+            repositoriesUseCase.getFavoriteRepositories()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
                     { repositoryList ->
                         repositoriesList = ArrayList(repositoriesList.map {
-                            it.copy(isFavorited = false)
+                            it.copy(isFavorite = false)
                         })
 
                         repositoryList.forEach { favoriteRepository ->
@@ -63,7 +64,7 @@ class RepositoriesSearchViewModel(
                             }
                                 .forEach {
                                     repositoriesList[repositoriesList.indexOf(it)] =
-                                        it.copy(isFavorited = true)
+                                        it.copy(isFavorite = true)
                                 }
                         }
                         repositoriesListLiveData.value?.first?.let {
@@ -96,7 +97,7 @@ class RepositoriesSearchViewModel(
     private fun loadRepositories(searchText: String) {
         searchRepositoriesDisposable?.dispose()
         searchRepositoriesDisposable =
-            repositoriesSearchUseCase.searchRepositories(
+            repositoriesUseCase.searchRepositories(
                 searchText,
                 FIRST_PAGE,
                 PAGE_ITEMS_COUNT
@@ -115,7 +116,7 @@ class RepositoriesSearchViewModel(
                     {
                         showProgressLiveData.postValue(false)
                         Timber.e(it, "Error searchRepositories")
-                        showErrorLiveData.postValue("Error loadRepositories")
+                        showErrorLiveData.postValue(MyError.LOAD_REPOSITORIES_ERROR)
                     }
                 )
     }
@@ -143,7 +144,7 @@ class RepositoriesSearchViewModel(
         if (repositoriesList.isEmpty()) return
         searchRepositoriesDisposable?.dispose()
         searchRepositoriesDisposable =
-            repositoriesSearchUseCase.searchRepositories(
+            repositoriesUseCase.searchRepositories(
                 event.searchText,
                 event.page,
                 PAGE_ITEMS_COUNT
@@ -177,12 +178,12 @@ class RepositoriesSearchViewModel(
         val repositoryCopy: Repository
         repositoryLikedDisposable?.dispose()
         repositoryLikedDisposable =
-            if (!repository.isFavorited) {
-                repositoryCopy = repository.copy(isFavorited = true)
-                repositoriesSearchUseCase.saveFavoriteRepository(repository)
+            if (!repository.isFavorite) {
+                repositoryCopy = repository.copy(isFavorite = true)
+                repositoriesUseCase.saveFavoriteRepository(repository)
             } else {
-                repositoryCopy = repository.copy(isFavorited = false)
-                repositoriesSearchUseCase.deleteFavoriteRepository(repository)
+                repositoryCopy = repository.copy(isFavorite = false)
+                repositoriesUseCase.deleteFavoriteRepository(repository)
 
             }
                 .subscribeOn(Schedulers.io())

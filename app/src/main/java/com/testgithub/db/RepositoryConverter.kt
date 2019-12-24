@@ -19,7 +19,6 @@ object RepositoryConverter {
             dateCreate = repository.createdAt
         )
 
-
     fun fromDatabase(repositories: List<FavoriteRepositoryEntity>): List<Repository> =
         repositories.map {
             Repository(
@@ -34,7 +33,7 @@ object RepositoryConverter {
                 forks = it.forks,
                 stars = it.score,
                 dateCreate = it.createdAt,
-                isFavorited = true
+                isFavorite = true
             )
         }
 

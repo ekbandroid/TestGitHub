@@ -8,7 +8,7 @@ import io.reactivex.Flowable
 import io.reactivex.Single
 import timber.log.Timber
 
-class RepositoriesSearchUseCase(
+class RepositoriesUseCase(
     private val gitHubApi: GitHubApi,
     private val favoriteRepositoriesDao: FavoriteRepositoriesDao
 ) {
@@ -21,7 +21,7 @@ class RepositoriesSearchUseCase(
             .flatMapIterable { it }
             .flatMapMaybe {
                 favoriteRepositoriesDao.getFavoriteRepositoryById(it.id)
-                    .map { _ -> it.copy(isFavorited = true) }
+                    .map { _ -> it.copy(isFavorite = true) }
                     .defaultIfEmpty(it)
             }
             .toList()
