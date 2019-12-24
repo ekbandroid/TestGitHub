@@ -16,7 +16,6 @@ class FavoriteRepositoriesViewModel(
     val repositoriesListLiveData = MutableLiveData<Pair<String, List<Repository>>>()
     val showErrorLiveData = MutableLiveData<MyError>()
 
-    var repositoriesList: ArrayList<Repository> = ArrayList()
     private var searchRepositoriesDisposable: Disposable? = null
     private var getFavoriteRepositoriesDisposable: Disposable
 
@@ -27,15 +26,9 @@ class FavoriteRepositoriesViewModel(
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
                     { repositoryList ->
-                        repositoriesList.clear()
                         Timber.d("getFavoriteRepositories result $repositoryList")
-                        repositoriesList.addAll(repositoryList)
-                        if (repositoriesListLiveData.value == null) {
-                            repositoriesListLiveData.postValue("" to repositoriesList)
-                        } else {
-                            repositoriesListLiveData.value?.let { (text, _) ->
-                                repositoriesListLiveData.postValue(text to repositoriesList)
-                            }
+                        with(repositoriesListLiveData) {
+                            postValue((value?.first ?: "") to repositoryList)
                         }
                     },
                     {

@@ -13,6 +13,7 @@
     <string name="sign_in_error">Error login. Try again later</string>
     <string name="sign_out_error">Sign out error. Try again later</string>
     <string name="load_repositories_error">Error load repositories list. Try again later</string>
+    <string name="add_repository_to_favorites_error">Error add repository to favorites. Try again later</string>
     <string name="load_favorite_repositories_error">Error load favorite repositories</string>
     <string name="delete_favorite_repository_error">Error delete favorite repositories</string>
     <string name="unknown_error">Error</string>

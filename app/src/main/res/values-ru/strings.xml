@@ -14,6 +14,7 @@
     <string name="sign_out_error">Ошибка деавторизации. Повторите попытку позже…</string>
     <string name="load_repositories_error">Ошибка загрузки списка репозиториев. Повторите попытку позже…</string>
     <string name="load_favorite_repositories_error">Ошибка загрузки сохраненных репозиториев</string>
+    <string name="add_repository_to_favorites_error">Ошибка сохранения репозитория. Повторите попытку позже…</string>
     <string name="delete_favorite_repository_error">При удалении репозитория возникла ошибка…</string>
     <string name="unknown_error">Ошибка</string>
 </resources>

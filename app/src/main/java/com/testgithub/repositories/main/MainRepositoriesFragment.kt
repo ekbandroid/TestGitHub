@@ -42,7 +42,8 @@ class MainRepositoriesFragment : Fragment() {
                 }
             }
             doAfterTextChanged { text ->
-                // динамическое выделение текста из searchEditText, только для списка сохраненных репозиториев
+                // динамическое выделение текста при посимвольном вводе в searchEditText - эта фича
+                // будет доступна только для списка сохраненных репозиториев
                 (repositoriesPagerAdapter.getItem(1) as OnSearchTextListener).onSearchText(text.toString())
             }
         }

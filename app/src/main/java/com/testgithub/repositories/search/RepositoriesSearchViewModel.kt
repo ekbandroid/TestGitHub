@@ -14,7 +14,7 @@ import java.util.concurrent.TimeUnit
 
 private const val FIRST_PAGE = 1
 private const val PAGE_ITEMS_COUNT = 100
-private const val ITEMS_COUNT_LIMIT = 1000
+private const val ITEMS_COUNT_LIMIT = 1000 //GitHubApi не выдает больше 1000 элементов(( Так и запишем...
 private const val DEBOUNCE_MS = 1000L
 
 class RepositoriesSearchViewModel(
@@ -105,14 +105,14 @@ class RepositoriesSearchViewModel(
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
                     { repositoryList ->
+                        Timber.d("searchRepositories result $repositoryList")
                         showProgressLiveData.postValue(false)
                         page = FIRST_PAGE
-                        Timber.d("searchRepositories result $repositoryList")
                         repositoriesListLiveData.postValue(searchText to repositoryList)
                     },
                     {
-                        showProgressLiveData.postValue(false)
                         Timber.e(it, "Error searchRepositories")
+                        showProgressLiveData.postValue(false)
                         showErrorLiveData.postValue(MyError.LOAD_REPOSITORIES_ERROR)
                     }
                 )
@@ -201,6 +201,7 @@ class RepositoriesSearchViewModel(
                     },
                     {
                         Timber.e(it, "Error onRepositoryLiked")
+                        showErrorLiveData.postValue(MyError.ADD_REPOSITORY_TO_FAVORITE_ERROR)
                     }
                 )
     }

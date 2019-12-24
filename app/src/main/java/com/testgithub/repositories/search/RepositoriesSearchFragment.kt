@@ -79,6 +79,7 @@ class RepositoriesSearchFragment : Fragment(), OnSearchTextListener {
                 Observer { error ->
                     when (error) {
                         MyError.LOAD_REPOSITORIES_ERROR -> toast(R.string.load_repositories_error)
+                        MyError.ADD_REPOSITORY_TO_FAVORITE_ERROR -> toast(R.string.add_repository_to_favorites_error)
                         else -> toast(R.string.unknown_error)
                     }
                 }
