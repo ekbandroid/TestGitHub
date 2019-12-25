@@ -16,7 +16,7 @@ private const val FIRST_PAGE = 1
 private const val PAGE_ITEMS_COUNT = 100
 private const val ITEMS_COUNT_LIMIT = 1000 //GitHubApi не выдает больше 1000 элементов(( Так и запишем...
 private const val DEBOUNCE_MS = 1000L
-
+// TODO: сделать нормальный пейджинг, например, как вот здесь: https://github.com/googlecodelabs/android-paging
 class RepositoriesSearchViewModel(
     private val repositoriesUseCase: RepositoriesUseCase
 ) : ViewModel() {
