@@ -9,6 +9,7 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.testgithub.R
 import com.testgithub.common.getColorCompat
+import com.testgithub.common.setDebouncedOnClickListener
 import com.testgithub.common.setSpannableText
 import com.testgithub.repositories.model.Repository
 import kotlinx.android.synthetic.main.item_repository.view.*
@@ -97,8 +98,8 @@ class RepositoryViewHolder(parent: ViewGroup) :
             )
         )
 
-        favoriteImageView.setOnClickListener { favoriteClickListener?.invoke(item) }
-        itemView.setOnClickListener { itemClickListener?.invoke(item) }
+        favoriteImageView.setDebouncedOnClickListener { favoriteClickListener?.invoke(item) }
+        itemView.setDebouncedOnClickListener { itemClickListener?.invoke(item) }
     }
 }
 

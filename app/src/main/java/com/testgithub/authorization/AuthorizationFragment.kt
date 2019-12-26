@@ -8,6 +8,7 @@ import androidx.fragment.app.Fragment
 import com.firebase.ui.auth.AuthUI
 import com.testgithub.R
 import com.testgithub.RC_SIGN_IN
+import com.testgithub.common.setDebouncedOnClickListener
 import kotlinx.android.synthetic.main.fragment_authorization.*
 
 class AuthorizationFragment : Fragment() {
@@ -19,7 +20,7 @@ class AuthorizationFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        signInButton.setOnClickListener {
+        signInButton.setDebouncedOnClickListener {
             val providers = arrayListOf(AuthUI.IdpConfig.GoogleBuilder().build())
             activity?.startActivityForResult(
                 AuthUI.getInstance()

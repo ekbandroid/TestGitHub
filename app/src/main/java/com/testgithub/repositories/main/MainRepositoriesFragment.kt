@@ -9,6 +9,7 @@ import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.Fragment
 import com.testgithub.R
 import com.testgithub.common.hideKeyboard
+import com.testgithub.common.setDebouncedOnClickListener
 import kotlinx.android.synthetic.main.fragment_repositories_main.*
 
 
@@ -28,7 +29,7 @@ class MainRepositoriesFragment : Fragment() {
             RepositoriesPagerAdapter(requireFragmentManager(), requireContext())
         viewPager.adapter = repositoriesPagerAdapter
         repositoriesTabLayout.setupWithViewPager(viewPager)
-        searchImageButton.setOnClickListener {
+        searchImageButton.setDebouncedOnClickListener {
             searchClicked()
         }
 
@@ -44,7 +45,9 @@ class MainRepositoriesFragment : Fragment() {
             doAfterTextChanged { text ->
                 // динамическое выделение текста при посимвольном вводе в searchEditText - эта фича
                 // будет доступна только для списка сохраненных репозиториев
-                (repositoriesPagerAdapter.getItem(1) as OnSearchTextListener).onSearchText(text.toString())
+                if (text != null) {
+                    (repositoriesPagerAdapter.getItem(1) as OnSearchTextListener).onSearchText(text.toString())
+                }
             }
         }
     }

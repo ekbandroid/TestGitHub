@@ -12,10 +12,7 @@ import com.bumptech.glide.request.RequestOptions
 import com.testgithub.authorization.AuthorizationFragment
 import com.testgithub.authorization.AuthorizationViewModel
 import com.testgithub.authorization.ShowFragmentEvent
-import com.testgithub.common.GlideApp
-import com.testgithub.common.MyError
-import com.testgithub.common.replaceFragment
-import com.testgithub.common.toast
+import com.testgithub.common.*
 import com.testgithub.repositories.main.MainRepositoriesFragment
 import kotlinx.android.synthetic.main.activity_main.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -29,7 +26,7 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        userAvatarImageView.setOnClickListener {
+        userAvatarImageView.setDebouncedOnClickListener {
             AlertDialog.Builder(this)
                 .setTitle(R.string.sign_out_alert_dialog_title)
                 .setMessage(R.string.sign_out_alert_dialog)

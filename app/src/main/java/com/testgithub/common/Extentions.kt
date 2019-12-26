@@ -16,6 +16,9 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import java.util.*
 
+
+private const val CLICK_DEBOUNCE_MILLIS = 500L
+
 fun FragmentActivity.replaceFragment(
     fragment: Fragment,
     @IdRes layoutId: Int = android.R.id.content,
@@ -83,4 +86,15 @@ fun TextView.setSpannableText(text: String, highlightText: String, color: Int) {
         }
     } while (indexOfPath != -1)
     this.text = spannable
+}
+
+fun View.setDebouncedOnClickListener(callback: (view: View) -> Unit) {
+    var lastClickTime = 0L
+    this.setOnClickListener {
+        val currentTimeMillis = System.currentTimeMillis()
+        if (currentTimeMillis - lastClickTime > CLICK_DEBOUNCE_MILLIS) {
+            lastClickTime = currentTimeMillis
+            callback.invoke(it)
+        }
+    }
 }

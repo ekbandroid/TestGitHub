@@ -24,6 +24,8 @@ class FavoriteRepositoriesFragment : Fragment(), OnSearchTextListener {
 
     private val repositoriesAdapter = RepositoriesAdapter()
 
+    private var searchListener: ((text: String) -> Unit)? = null
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -75,9 +77,11 @@ class FavoriteRepositoriesFragment : Fragment(), OnSearchTextListener {
                 }
             )
         }
+
+        searchListener = {text -> viewModel.onSearch(text) }
     }
 
     override fun onSearchText(text: String) {
-        viewModel.onSearch(text)
+        searchListener?.invoke(text)
     }
 }
