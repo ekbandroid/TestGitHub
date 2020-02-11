@@ -1,218 +1,148 @@
 package com.testgithub.repositories.search
 
+import androidx.annotation.IntegerRes
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.Transformations
 import androidx.lifecycle.ViewModel
-import com.testgithub.common.MyError
-import com.testgithub.repositories.RepositoriesUseCase
+import androidx.paging.PagedList
+import com.testgithub.R
+import com.testgithub.repositories.favorites.FavoriteRepositoriesInteractor
 import com.testgithub.repositories.model.Repository
+import com.testgithub.repositories.search.paging.LoadRepositoriesError
+import com.testgithub.repositories.search.paging.NetworkState
+import com.testgithub.repositories.search.paging.RepoSearchResult
+import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
-import io.reactivex.processors.PublishProcessor
 import io.reactivex.schedulers.Schedulers
 import timber.log.Timber
-import java.util.concurrent.TimeUnit
 
-private const val FIRST_PAGE = 1
-private const val PAGE_ITEMS_COUNT = 100
-private const val ITEMS_COUNT_LIMIT = 1000 //GitHubApi не выдает больше 1000 элементов(( Так и запишем...
-private const val DEBOUNCE_MS = 1000L
-// TODO: сделать нормальный пейджинг, например, как вот здесь: https://github.com/googlecodelabs/android-paging
 class RepositoriesSearchViewModel(
-    private val repositoriesUseCase: RepositoriesUseCase
+    private val searchRepositoriesInteractor: SearchRepositoriesInteractor,
+    private val favoriteRepositoriesInteractor: FavoriteRepositoriesInteractor
 ) : ViewModel() {
-    val repositoriesListLiveData = MutableLiveData<Pair<String, List<Repository?>>>()
-    val showProgressLiveData = MutableLiveData<Boolean>()
-    val showSwipeRefreshLiveData = MutableLiveData<Boolean>()
-    val showErrorLiveData = MutableLiveData<MyError>()
 
-    private var page = FIRST_PAGE
+    private val _repositoriesList = MutableLiveData<PagedList<Repository>?>()
+    val repositoriesList: LiveData<Pair<PagedList<Repository>?, String>>
+        get() = Transformations.map(_repositoriesList) { it to (query ?: "") }
+
+    private val _networkState = MutableLiveData<NetworkState>()
+    val networkState: LiveData<NetworkState>
+        get() = _networkState
+
+    private val _showErrorToastLiveData = MutableLiveData<@IntegerRes Int>()
+    val showErrorToastLiveData: LiveData<Int>
+        get() = _showErrorToastLiveData
+
+    private val _swipeRefreshLiveData = MutableLiveData<Boolean>()
+    val swipeRefreshLiveData: LiveData<Boolean>
+        get() = _swipeRefreshLiveData
+
+    private var query: String? = null
+    private var retryCallback: (() -> Unit)? = null
+
     private var searchRepositoriesDisposable: Disposable? = null
-    private var searchEventsDisposable: Disposable
-    private var getFavoriteRepositoriesDisposable: Disposable
     private var repositoryLikedDisposable: Disposable? = null
-    private val searchEventsProcessor =
-        PublishProcessor.create<NextEvent>()
+    private var resultCompositeDisposable = CompositeDisposable()
 
-    init {
-        searchEventsDisposable =
-            searchEventsProcessor
-                .debounce(DEBOUNCE_MS, TimeUnit.MILLISECONDS)
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(
-                    {
-                        getNext(it)
-                    },
-                    {
-                        Timber.d(it, "Error searchEventsProcessor")
-                    }
-                )
-
-        getFavoriteRepositoriesDisposable =
-            repositoriesUseCase.getFavoriteRepositories()
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(
-                    { repositoryList ->
-                        with(repositoriesListLiveData) {
-                            value?.let { (searchedText, repositories) ->
-                                val replacedRepositoriesList =
-                                    ArrayList(repositories.map { it?.copy(isFavorite = false) })
-                                repositoryList.forEach { favoriteRepository ->
-                                    replacedRepositoriesList
-                                        .filter { it?.id == favoriteRepository.id }
-                                        .forEach {
-                                            replacedRepositoriesList[
-                                                    replacedRepositoriesList.indexOf(it)
-                                            ] = it?.copy(isFavorite = true)
-                                        }
-                                }
-                                postValue(searchedText to replacedRepositoriesList)
-                            }
-                        }
-                    },
-                    {
-                        Timber.e(it, "Error searchRepositories")
-                    }
-                )
-        showProgressLiveData.postValue(false)
-        showSwipeRefreshLiveData.postValue(false)
-    }
-
-    fun searchRepositories(searchText: String) {
-        if (searchText.isBlank()) return
-        repositoriesListLiveData.postValue(searchText to emptyList())
-        showProgressLiveData.postValue(true)
-        loadRepositories(searchText)
-    }
-
-    fun updateRepositories() {
-        showSwipeRefreshLiveData.postValue(false)
-        repositoriesListLiveData.value?.first?.let {
-            showProgressLiveData.postValue(true)
-            loadRepositories(it)
-        }
-    }
-
-    private fun loadRepositories(searchText: String) {
+    fun searchRepo(queryString: String) {
+        query = queryString
         searchRepositoriesDisposable?.dispose()
+        this._repositoriesList.postValue(null)
         searchRepositoriesDisposable =
-            repositoriesUseCase.searchRepositories(
-                searchText,
-                FIRST_PAGE,
-                PAGE_ITEMS_COUNT
-            )
+            searchRepositoriesInteractor.clearSearchedRepositoriesTable()
+                .andThen(Single.fromCallable {
+                    searchRepositoriesInteractor.search(queryString)
+                })
                 .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
-                    { repositoryList ->
-                        Timber.d("searchRepositories result $repositoryList")
-                        showProgressLiveData.postValue(false)
-                        page = FIRST_PAGE
-                        repositoriesListLiveData.postValue(searchText to repositoryList)
-                    },
+                    { handleRepoSearchResult(it) },
                     {
-                        Timber.e(it, "Error searchRepositories")
-                        showProgressLiveData.postValue(false)
-                        showErrorLiveData.postValue(MyError.LOAD_REPOSITORIES_ERROR)
+                        Timber.d(it, "Error searchRepo")
                     }
                 )
     }
 
-    fun listScrolledToEnd() {
-        Timber.d("listScrolledTEnd")
-        repositoriesListLiveData.value?.let { (searchText, list) ->
-            if (list.size < PAGE_ITEMS_COUNT || list.size == ITEMS_COUNT_LIMIT) return
-            if (list[list.size - 1] != null) {
-                repositoriesListLiveData.postValue(searchText to list + listOf<Repository?>(null))
+    fun refreshList() {
+        _swipeRefreshLiveData.postValue(false)
+        query?.let { searchedText ->
+            if (searchedText.isNotEmpty()) {
+                searchRepo(searchedText)
             }
-        }
-        repositoriesListLiveData.value?.first?.let { searchText ->
-            searchEventsProcessor.onNext(
-                NextEvent(
-                    searchText,
-                    page + 1,
-                    PAGE_ITEMS_COUNT
-                )
-            )
-        }
-    }
-
-    private fun getNext(event: NextEvent) {
-        repositoriesListLiveData.value?.let { (searchText, repositoriesList) ->
-            if (repositoriesList.isEmpty()) return
-            searchRepositoriesDisposable?.dispose()
-            searchRepositoriesDisposable =
-                repositoriesUseCase.searchRepositories(
-                    event.searchText,
-                    event.page,
-                    PAGE_ITEMS_COUNT
-                )
-                    .subscribeOn(Schedulers.io())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(
-                        { repositoryList ->
-                            val updatedRepositories = ArrayList(repositoriesList).apply {
-                                removeAll(listOf(null))
-                                addAll(repositoryList)
-                            }
-                            page = event.page
-                            Timber.d("searchRepositories repositoriesList.size ${updatedRepositories.size}")
-                            repositoriesListLiveData.postValue(event.searchText to updatedRepositories)
-                        },
-                        {
-                            Timber.e(it, "Error getNextPage")
-                            repositoriesListLiveData.postValue(
-                                searchText to ArrayList(repositoriesList).apply {
-                                    removeAll(
-                                        listOf(null)
-                                    )
-                                }
-                            )
-                        }
-                    )
         }
     }
 
     fun onRepositoryLiked(repository: Repository) {
-        val repositoryCopy: Repository
         repositoryLikedDisposable?.dispose()
         repositoryLikedDisposable =
             if (!repository.isFavorite) {
-                repositoryCopy = repository.copy(isFavorite = true)
-                repositoriesUseCase.saveFavoriteRepository(repository)
+                favoriteRepositoriesInteractor.saveFavoriteRepository(repository)
             } else {
-                repositoryCopy = repository.copy(isFavorite = false)
-                repositoriesUseCase.deleteFavoriteRepository(repository)
+                favoriteRepositoriesInteractor.deleteFavoriteRepository(repository)
             }
+                .andThen(
+                    searchRepositoriesInteractor.replaceRepository(
+                        repository.copy(isFavorite = !repository.isFavorite),
+                        query
+                    )
+                )
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
                     {
-                        with(repositoriesListLiveData) {
-                            value?.let { (searchedText, repositoriesList) ->
-                                val updatedRepositoriesList = ArrayList(repositoriesList)
-                                val index = updatedRepositoriesList.indexOf(repository)
-                                if (index > -1) {
-                                    updatedRepositoriesList[index] = repositoryCopy
-                                    repositoriesListLiveData.postValue(searchedText to updatedRepositoriesList)
-                                }
-                            }
-                        }
+                        Timber.d("RepositoryLiked $repository")
                     },
                     {
                         Timber.e(it, "Error onRepositoryLiked")
-                        showErrorLiveData.postValue(MyError.ADD_REPOSITORY_TO_FAVORITE_ERROR)
+                        _showErrorToastLiveData.postValue(R.string.add_repository_to_favorites_error)
                     }
                 )
     }
 
+    fun retry() {
+        retryCallback?.invoke()
+    }
+
+    private fun handleRepoSearchResult(result: RepoSearchResult) {
+        resultCompositeDisposable.clear()
+        resultCompositeDisposable.addAll(
+            result.data
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                    {
+                        this._repositoriesList.postValue(it)
+                    },
+                    {
+                        Timber.d(it, "Error observe paged list")
+                    }
+                ),
+            result.networkState
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                    {
+                        _networkState.postValue(it)
+                        it.error?.let { error ->
+                            if (error is LoadRepositoriesError) {
+                                _showErrorToastLiveData.postValue(R.string.load_repositories_error)
+                            } else {
+                                _showErrorToastLiveData.postValue(R.string.unknown_error)
+                            }
+                        }
+                    },
+                    {
+                        Timber.d(it, "Error observe networkState")
+                    }
+                )
+        )
+        retryCallback = result.retryCallback
+    }
+
     override fun onCleared() {
         super.onCleared()
-        searchEventsDisposable.dispose()
         searchRepositoriesDisposable?.dispose()
-        getFavoriteRepositoriesDisposable.dispose()
         repositoryLikedDisposable?.dispose()
+        resultCompositeDisposable.clear()
     }
 }
-
-data class NextEvent(val searchText: String, val page: Int, val itemsCount: Int)

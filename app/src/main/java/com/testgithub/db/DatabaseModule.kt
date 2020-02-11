@@ -1,13 +1,14 @@
 package com.testgithub.db
 
 import androidx.room.Room
+import com.testgithub.InjectionModule
 import org.koin.dsl.module
 import java.util.concurrent.Executors
 
-object DatabaseModule {
+object DatabaseModule: InjectionModule {
     private const val DATABASE_NAME = "test_git_hub"
 
-    fun create() = module {
+    override fun create() = module {
         single {
             Room.databaseBuilder(
                 get(),
@@ -18,6 +19,5 @@ object DatabaseModule {
                 .setQueryExecutor(Executors.newCachedThreadPool())
                 .build()
         }
-        single { get<TestGitHubDatabase>().favoriteRepositoriesDao() }
     }
 }

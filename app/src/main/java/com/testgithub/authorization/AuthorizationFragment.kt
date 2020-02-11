@@ -7,7 +7,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import com.firebase.ui.auth.AuthUI
 import com.testgithub.R
-import com.testgithub.RC_SIGN_IN
+import com.testgithub.REQUEST_CODE_SIGN_IN
 import com.testgithub.common.setDebouncedOnClickListener
 import kotlinx.android.synthetic.main.fragment_authorization.*
 
@@ -27,7 +27,7 @@ class AuthorizationFragment : Fragment() {
                     .createSignInIntentBuilder()
                     .setAvailableProviders(providers)
                     .build(),
-                RC_SIGN_IN
+                REQUEST_CODE_SIGN_IN
             )
         }
     }

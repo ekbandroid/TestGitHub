@@ -1,21 +1,31 @@
 package com.testgithub.authorization
 
 import android.net.Uri
+import androidx.annotation.IntegerRes
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.testgithub.common.MyError
+import com.testgithub.R
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
 import timber.log.Timber
 
 class AuthorizationViewModel(
-    private val authorizationUseCase: AuthorizationUseCase
+    private val authorizationUseCase: AuthorizationInteractor
 ) : ViewModel() {
 
-    val showAvatarLiveData = MutableLiveData<Uri?>()
-    val showFragmentLiveData = MutableLiveData<ShowFragmentEvent>()
-    val showErrorLiveData = MutableLiveData<MyError>()
+    private val _showAvatarLiveData = MutableLiveData<Uri?>()
+    val showAvatarLiveData: LiveData<Uri?>
+        get() = _showAvatarLiveData
+
+    private val _showFragmentLiveData = MutableLiveData<ShowFragmentEvent>()
+    val showFragmentLiveData: LiveData<ShowFragmentEvent>
+        get() = _showFragmentLiveData
+
+    private val _showErrorToastLiveData = MutableLiveData<@IntegerRes Int>()
+    val showErrorToastLiveData: LiveData<Int>
+        get() = _showErrorToastLiveData
 
     private var logoutDisposable: Disposable? = null
 
@@ -35,7 +45,7 @@ class AuthorizationViewModel(
                     },
                     {
                         Timber.e("onLogout error")
-                        showErrorLiveData.postValue(MyError.SIGN_OUT_ERROR)
+                        _showErrorToastLiveData.postValue(R.string.sign_out_error)
                     }
                 )
     }
@@ -44,12 +54,12 @@ class AuthorizationViewModel(
 
     private fun setupView() {
         authorizationUseCase.getUser()?.let {
-            showAvatarLiveData.postValue(it.photoUrl)
-            showFragmentLiveData.postValue(ShowFragmentEvent.SEARCH)
+            _showAvatarLiveData.postValue(it.photoUrl)
+            _showFragmentLiveData.postValue(ShowFragmentEvent.SEARCH)
             return
         }
-        showAvatarLiveData.postValue(null)
-        showFragmentLiveData.postValue(ShowFragmentEvent.AUTH)
+        _showAvatarLiveData.postValue(null)
+        _showFragmentLiveData.postValue(ShowFragmentEvent.AUTH)
     }
 
     override fun onCleared() {

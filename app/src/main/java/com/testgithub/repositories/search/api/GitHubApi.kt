@@ -1,6 +1,5 @@
-package com.testgithub.repositories
+package com.testgithub.repositories.search.api
 
-import com.testgithub.repositories.model.SearchRepositoriesResponse
 import io.reactivex.Single
 import retrofit2.http.GET
 import retrofit2.http.Query

@@ -2,10 +2,10 @@ package com.testgithub.authorization
 
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
-import com.testgithub.db.FavoriteRepositoriesDao
+import com.testgithub.repositories.favorites.db.FavoriteRepositoriesDao
 import io.reactivex.Completable
 
-class AuthorizationUseCase(
+class AuthorizationInteractor(
     private val favoriteRepositoriesDao: FavoriteRepositoriesDao,
     private val fireBaseAuth: FirebaseAuth
 ) {

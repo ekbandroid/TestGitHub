@@ -1,4 +1,4 @@
-package com.testgithub.db
+package com.testgithub.repositories.favorites.db
 
 import com.testgithub.repositories.model.Owner
 import com.testgithub.repositories.model.Repository
@@ -21,6 +21,22 @@ object RepositoryConverter {
                 isFavorite = true
             )
         }
+
+    fun fromDatabase(repository: FavoriteRepositoryEntity): Repository =
+        Repository(
+            id = repository.id,
+            name = repository.name,
+            owner = Owner(
+                id = repository.ownerId,
+                login = repository.ownerLogin,
+                avatarUrl = repository.ownerAvatarUrl
+            ),
+            description = repository.description,
+            forks = repository.forks,
+            stars = repository.score,
+            dateCreate = repository.createdAt,
+            isFavorite = true
+        )
 
     fun toDatabase(repository: Repository): FavoriteRepositoryEntity =
         FavoriteRepositoryEntity(

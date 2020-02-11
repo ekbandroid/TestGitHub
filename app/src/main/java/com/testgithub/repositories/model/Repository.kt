@@ -1,7 +1,10 @@
 package com.testgithub.repositories.model
 
+import android.os.Parcelable
 import com.google.gson.annotations.SerializedName
+import kotlinx.android.parcel.Parcelize
 
+@Parcelize
 data class Repository(
     @SerializedName("id") val id: String = "",
     @SerializedName("name") val name: String = "",
@@ -11,4 +14,4 @@ data class Repository(
     @SerializedName("score") val stars: Float = 0F,
     @SerializedName("created_at") val dateCreate: String = "",
     val isFavorite: Boolean = false
-)
+) : Parcelable

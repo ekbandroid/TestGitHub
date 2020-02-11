@@ -2,6 +2,7 @@ package com.testgithub.common
 
 import android.app.Activity
 import android.content.Context
+import android.os.Bundle
 import android.text.Spannable
 import android.text.SpannableString
 import android.text.style.ForegroundColorSpan
@@ -12,9 +13,12 @@ import android.widget.Toast
 import androidx.annotation.ColorRes
 import androidx.annotation.IdRes
 import androidx.core.content.ContextCompat
+import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import java.util.*
+import kotlin.properties.ReadWriteProperty
+import kotlin.reflect.KProperty
 
 
 private const val CLICK_DEBOUNCE_MILLIS = 500L

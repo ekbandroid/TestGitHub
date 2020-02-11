@@ -1,4 +1,4 @@
-package com.testgithub.db
+package com.testgithub.repositories.favorites.db
 
 import androidx.room.Dao
 import androidx.room.Insert

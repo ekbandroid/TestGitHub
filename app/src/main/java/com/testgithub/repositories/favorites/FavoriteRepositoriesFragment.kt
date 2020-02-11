@@ -9,10 +9,8 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.testgithub.R
-import com.testgithub.common.MyError
 import com.testgithub.common.addFragment
 import com.testgithub.common.toast
-import com.testgithub.repositories.RepositoriesAdapter
 import com.testgithub.repositories.detail.RepositoryDetailsFragment
 import com.testgithub.repositories.main.OnSearchTextListener
 import kotlinx.android.synthetic.main.fragment_repositories_search.*
@@ -22,7 +20,8 @@ class FavoriteRepositoriesFragment : Fragment(), OnSearchTextListener {
 
     private val viewModel: FavoriteRepositoriesViewModel by viewModel()
 
-    private val repositoriesAdapter = RepositoriesAdapter()
+    private val repositoriesAdapter =
+        RepositoriesAdapter()
 
     private var searchListener: ((text: String) -> Unit)? = null
 
@@ -66,19 +65,13 @@ class FavoriteRepositoriesFragment : Fragment(), OnSearchTextListener {
                     repositoriesAdapter.notifyDataSetChanged()
                 }
             )
-            showErrorLiveData.observe(
+            showErrorToastLiveData.observe(
                 viewLifecycleOwner,
-                Observer { error ->
-                    when (error) {
-                        MyError.LOAD_FAVORITE_REPOSITORIES_ERROR -> toast(R.string.load_favorite_repositories_error)
-                        MyError.DELETE_FAVORITE_REPOSITORY_ERROR -> toast(R.string.delete_favorite_repository_error)
-                        else -> toast(R.string.unknown_error)
-                    }
-                }
+                Observer { toast(it) }
             )
         }
 
-        searchListener = {text -> viewModel.onSearch(text) }
+        searchListener = { text -> viewModel.onSearch(text) }
     }
 
     override fun onSearchText(text: String) {

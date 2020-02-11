@@ -1,9 +1,9 @@
-package com.testgithub.db
+package com.testgithub.repositories.favorites.db
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import com.testgithub.db.FavoriteRepositoryEntity.Companion.TABLE_NAME
+import com.testgithub.repositories.favorites.db.FavoriteRepositoryEntity.Companion.TABLE_NAME
 import org.jetbrains.annotations.NotNull
 
 @Entity(tableName = TABLE_NAME)

@@ -17,4 +17,5 @@
     <string name="add_repository_to_favorites_error">Ошибка сохранения репозитория. Повторите попытку позже…</string>
     <string name="delete_favorite_repository_error">При удалении репозитория возникла ошибка…</string>
     <string name="unknown_error">Ошибка</string>
+    <string name="retry_button_text">Повторить</string>
 </resources>

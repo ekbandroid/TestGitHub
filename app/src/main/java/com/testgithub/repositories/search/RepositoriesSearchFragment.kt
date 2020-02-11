@@ -4,26 +4,26 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.testgithub.R
-import com.testgithub.common.MyError
 import com.testgithub.common.addFragment
 import com.testgithub.common.toast
-import com.testgithub.repositories.OnBottomReachedListener
-import com.testgithub.repositories.RepositoriesAdapter
 import com.testgithub.repositories.detail.RepositoryDetailsFragment
 import com.testgithub.repositories.main.OnSearchTextListener
 import kotlinx.android.synthetic.main.fragment_repositories_search.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
+import timber.log.Timber
 
 class RepositoriesSearchFragment : Fragment(), OnSearchTextListener {
 
     private val viewModel: RepositoriesSearchViewModel by viewModel()
 
-    private val repositoriesAdapter = RepositoriesAdapter()
+    private val repositoriesAdapter =
+        SearchedRepositoriesAdapter {
+            viewModel.retry()
+        }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -34,15 +34,12 @@ class RepositoriesSearchFragment : Fragment(), OnSearchTextListener {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         with(repositoriesAdapter) {
-            onBottomReachedListener = object : OnBottomReachedListener {
-                override fun onBottomReached(position: Int) {
-                    viewModel.listScrolledToEnd()
-                }
+            favoriteClickListener = { repository ->
+                viewModel.onRepositoryLiked(repository)
             }
-            favoriteClickListener =
-                { repository -> viewModel.onRepositoryLiked(repository) }
-            itemClickListener =
-                { repository -> addFragment(RepositoryDetailsFragment.create(repository)) }
+            itemClickListener = { repository ->
+                addFragment(RepositoryDetailsFragment.create(repository))
+            }
         }
 
         with(repositoriesRecyclerView) {
@@ -51,43 +48,30 @@ class RepositoriesSearchFragment : Fragment(), OnSearchTextListener {
             layoutManager = LinearLayoutManager(context)
         }
 
-        swipeRefreshLayout.setOnRefreshListener { viewModel.updateRepositories() }
+        swipeRefreshLayout.setOnRefreshListener { viewModel.refreshList() }
 
         with(viewModel) {
-            repositoriesListLiveData.observe(
-                viewLifecycleOwner,
-                Observer { (searchText, repositoriesList) ->
-                    repositoriesAdapter.highlightedText = searchText
-                    repositoriesAdapter.submitList(repositoriesList)
-                    repositoriesAdapter.notifyDataSetChanged()
-                }
-            )
-            showProgressLiveData.observe(
-                viewLifecycleOwner,
-                Observer { isShow ->
-                    loadingStateView.isVisible = isShow
-                }
-            )
-            showSwipeRefreshLiveData.observe(
+            networkState.observe(viewLifecycleOwner, Observer {
+                repositoriesAdapter.setNetworkState(it)
+            })
+            repositoriesList.observe(viewLifecycleOwner, Observer { (pagedList, searchText) ->
+                Timber.d("repositoriesAdapter.submitList size = ${pagedList?.size}")
+                repositoriesAdapter.addItems(pagedList, searchText)
+            })
+            swipeRefreshLiveData.observe(
                 viewLifecycleOwner,
                 Observer { isShow ->
                     swipeRefreshLayout.isRefreshing = isShow
                 }
             )
-            showErrorLiveData.observe(
+            showErrorToastLiveData.observe(
                 viewLifecycleOwner,
-                Observer { error ->
-                    when (error) {
-                        MyError.LOAD_REPOSITORIES_ERROR -> toast(R.string.load_repositories_error)
-                        MyError.ADD_REPOSITORY_TO_FAVORITE_ERROR -> toast(R.string.add_repository_to_favorites_error)
-                        else -> toast(R.string.unknown_error)
-                    }
-                }
+                Observer { toast(it) }
             )
         }
     }
 
     override fun onSearchText(text: String) {
-        viewModel.searchRepositories(text)
+        viewModel.searchRepo(text)
     }
 }

@@ -1,15 +1,16 @@
 package com.testgithub.authorization
 
 import com.google.firebase.auth.FirebaseAuth
+import com.testgithub.InjectionModule
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 
-object AuthModule {
+object AuthModule: InjectionModule {
 
-    fun create() = module {
+    override fun create() = module {
         single { FirebaseAuth.getInstance() }
 
-        single { AuthorizationUseCase(get(), get()) }
+        single { AuthorizationInteractor(get(), get()) }
 
         viewModel { AuthorizationViewModel(get()) }
     }
