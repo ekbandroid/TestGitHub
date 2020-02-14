@@ -5,8 +5,8 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentStatePagerAdapter
 import com.testgithub.R
-import com.testgithub.repositories.favorites.FavoriteRepositoriesFragment
-import com.testgithub.repositories.search.RepositoriesSearchFragment
+import com.testgithub.repositories.favorite.FavoriteRepositoriesFragment
+import com.testgithub.repositories.search.SearchRepositoriesFragment
 
 @Suppress("DEPRECATION")
 class RepositoriesPagerAdapter(
@@ -16,7 +16,7 @@ class RepositoriesPagerAdapter(
 
     private val fragments = listOf(
         FragmentItem(
-            RepositoriesSearchFragment(),
+            SearchRepositoriesFragment(),
             context.getString(R.string.tab_search)
         ),
         FragmentItem(

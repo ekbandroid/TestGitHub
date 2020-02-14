@@ -8,7 +8,7 @@ import androidx.paging.PagedListAdapter
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.testgithub.R
-import com.testgithub.repositories.favorites.RepositoryViewHolder
+import com.testgithub.repositories.favorite.RepositoryViewHolder
 import com.testgithub.repositories.model.Repository
 import com.testgithub.repositories.search.paging.LoadRepositoriesError
 import com.testgithub.repositories.search.paging.NetworkState

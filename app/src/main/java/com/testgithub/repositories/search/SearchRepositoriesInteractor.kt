@@ -1,10 +1,10 @@
 package com.testgithub.repositories.search
 
 import androidx.paging.RxPagedListBuilder
-import com.testgithub.repositories.favorites.db.FavoriteRepositoriesDatabaseGateway
+import com.testgithub.repositories.favorite.db.FavoriteRepositoriesDatabaseGateway
 import com.testgithub.repositories.model.Repository
 import com.testgithub.repositories.search.api.GitHubService
-import com.testgithub.repositories.search.db.SearchedRepositoriesDatabaseGateway
+import com.testgithub.repositories.search.db.SearchRepositoriesDatabaseGateway
 import com.testgithub.repositories.search.paging.RepoBoundaryCallback
 import com.testgithub.repositories.search.paging.RepoSearchResult
 import io.reactivex.BackpressureStrategy
@@ -12,7 +12,7 @@ import io.reactivex.Completable
 
 class SearchRepositoriesInteractor(
     private val gitHubService: GitHubService,
-    private val searchedRepositoriesDatabaseGateway: SearchedRepositoriesDatabaseGateway,
+    private val searchRepositoriesDatabaseGateway: SearchRepositoriesDatabaseGateway,
     private val favoriteRepositoriesDatabaseGateway: FavoriteRepositoriesDatabaseGateway
 ) {
 
@@ -22,13 +22,13 @@ class SearchRepositoriesInteractor(
 
     fun search(query: String): RepoSearchResult {
         val dataSourceFactory =
-            searchedRepositoriesDatabaseGateway.reposByName(query)
+            searchRepositoriesDatabaseGateway.reposByName(query)
 
         val boundaryCallback =
             RepoBoundaryCallback(
                 query,
                 gitHubService,
-                searchedRepositoriesDatabaseGateway,
+                searchRepositoriesDatabaseGateway,
                 favoriteRepositoriesDatabaseGateway
             )
 
@@ -47,9 +47,9 @@ class SearchRepositoriesInteractor(
     }
 
     fun clearSearchedRepositoriesTable(): Completable =
-        searchedRepositoriesDatabaseGateway.deleteAll()
+        searchRepositoriesDatabaseGateway.deleteAll()
 
     fun replaceRepository(repository: Repository, searchText: String?): Completable =
-        searchedRepositoriesDatabaseGateway.update(repository, searchText)
+        searchRepositoriesDatabaseGateway.update(repository, searchText)
 
 }

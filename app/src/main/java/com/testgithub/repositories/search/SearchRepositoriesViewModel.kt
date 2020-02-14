@@ -7,7 +7,7 @@ import androidx.lifecycle.Transformations
 import androidx.lifecycle.ViewModel
 import androidx.paging.PagedList
 import com.testgithub.R
-import com.testgithub.repositories.favorites.FavoriteRepositoriesInteractor
+import com.testgithub.repositories.favorite.FavoriteRepositoriesInteractor
 import com.testgithub.repositories.model.Repository
 import com.testgithub.repositories.search.paging.LoadRepositoriesError
 import com.testgithub.repositories.search.paging.NetworkState
@@ -19,7 +19,7 @@ import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
 import timber.log.Timber
 
-class RepositoriesSearchViewModel(
+class SearchRepositoriesViewModel(
     private val searchRepositoriesInteractor: SearchRepositoriesInteractor,
     private val favoriteRepositoriesInteractor: FavoriteRepositoriesInteractor
 ) : ViewModel() {

@@ -1,4 +1,4 @@
-package com.testgithub.repositories.favorites.db
+package com.testgithub.repositories.favorite.db
 
 import com.testgithub.repositories.model.Repository
 import io.reactivex.Completable

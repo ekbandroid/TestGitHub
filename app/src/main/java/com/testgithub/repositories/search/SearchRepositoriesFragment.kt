@@ -16,9 +16,9 @@ import kotlinx.android.synthetic.main.fragment_repositories_search.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import timber.log.Timber
 
-class RepositoriesSearchFragment : Fragment(), OnSearchTextListener {
+class SearchRepositoriesFragment : Fragment(), OnSearchTextListener {
 
-    private val viewModel: RepositoriesSearchViewModel by viewModel()
+    private val viewModel: SearchRepositoriesViewModel by viewModel()
 
     private val repositoriesAdapter =
         SearchedRepositoriesAdapter {

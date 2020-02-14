@@ -3,8 +3,8 @@ package com.testgithub.repositories.search.db
 import com.testgithub.repositories.model.Owner
 import com.testgithub.repositories.model.Repository
 
-object SearchedRepositoryConverter {
-    fun fromDatabase(repository: SearchedRepositoryEntity): Repository =
+object SearchRepositoryConverter {
+    fun fromDatabase(repository: SearchRepositoryEntity): Repository =
         Repository(
             id = repository.id,
             name = repository.name,
@@ -20,7 +20,7 @@ object SearchedRepositoryConverter {
             isFavorite = repository.isFavorite
         )
 
-    fun fromDatabase(repositories: List<SearchedRepositoryEntity>): List<Repository> =
+    fun fromDatabase(repositories: List<SearchRepositoryEntity>): List<Repository> =
         repositories.map {
             Repository(
                 id = it.id,
@@ -41,9 +41,9 @@ object SearchedRepositoryConverter {
     fun listToDatabase(
         repositoryList: List<Repository>,
         searchText: String
-    ): List<SearchedRepositoryEntity> =
+    ): List<SearchRepositoryEntity> =
         repositoryList.map {
-            SearchedRepositoryEntity(
+            SearchRepositoryEntity(
                 id = it.id,
                 name = it.name,
                 ownerId = it.owner.id,
@@ -58,8 +58,8 @@ object SearchedRepositoryConverter {
             )
         }
 
-    fun toDatabase(repository: Repository, searchText: String): SearchedRepositoryEntity =
-        SearchedRepositoryEntity(
+    fun toDatabase(repository: Repository, searchText: String): SearchRepositoryEntity =
+        SearchRepositoryEntity(
             id = repository.id,
             name = repository.name,
             ownerId = repository.owner.id,

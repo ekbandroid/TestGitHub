@@ -5,7 +5,7 @@ import com.testgithub.InjectionModule
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 
-object AuthModule: InjectionModule {
+object AuthorizationModule: InjectionModule {
 
     override fun create() = module {
         single { FirebaseAuth.getInstance() }

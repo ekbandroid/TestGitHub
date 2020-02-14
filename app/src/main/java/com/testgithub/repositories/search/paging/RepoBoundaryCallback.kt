@@ -1,10 +1,10 @@
 package com.testgithub.repositories.search.paging
 
 import androidx.paging.PagedList
-import com.testgithub.repositories.favorites.db.FavoriteRepositoriesDatabaseGateway
+import com.testgithub.repositories.favorite.db.FavoriteRepositoriesDatabaseGateway
 import com.testgithub.repositories.model.Repository
 import com.testgithub.repositories.search.api.GitHubService
-import com.testgithub.repositories.search.db.SearchedRepositoriesDatabaseGateway
+import com.testgithub.repositories.search.db.SearchRepositoriesDatabaseGateway
 import io.reactivex.Flowable
 import io.reactivex.disposables.Disposable
 import io.reactivex.processors.BehaviorProcessor
@@ -14,7 +14,7 @@ import timber.log.Timber
 class RepoBoundaryCallback(
     private val query: String,
     private val gitHubService: GitHubService,
-    private val searchedRepositoriesDatabaseGateway: SearchedRepositoriesDatabaseGateway,
+    private val searchRepositoriesDatabaseGateway: SearchRepositoriesDatabaseGateway,
     private val favoriteRepositoriesDatabaseGateway: FavoriteRepositoriesDatabaseGateway
 ) : PagedList.BoundaryCallback<Repository?>() {
 
@@ -63,7 +63,7 @@ class RepoBoundaryCallback(
                 }
                 .toList()
                 .flatMapCompletable {
-                    searchedRepositoriesDatabaseGateway.insertList(it, query)
+                    searchRepositoriesDatabaseGateway.insertList(it, query)
                 }
                 .subscribeOn(Schedulers.io())
                 .subscribe(

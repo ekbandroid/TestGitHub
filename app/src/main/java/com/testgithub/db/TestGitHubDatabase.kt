@@ -3,15 +3,15 @@ package com.testgithub.db
 import androidx.room.Database
 import androidx.room.RoomDatabase
 import com.testgithub.db.TestGitHubDatabase.Companion.DATABASE_VERSION
-import com.testgithub.repositories.favorites.db.FavoriteRepositoriesDao
-import com.testgithub.repositories.favorites.db.FavoriteRepositoryEntity
-import com.testgithub.repositories.search.db.SearchedRepositoriesDao
-import com.testgithub.repositories.search.db.SearchedRepositoryEntity
+import com.testgithub.repositories.favorite.db.FavoriteRepositoriesDao
+import com.testgithub.repositories.favorite.db.FavoriteRepositoryEntity
+import com.testgithub.repositories.search.db.SearchRepositoriesDao
+import com.testgithub.repositories.search.db.SearchRepositoryEntity
 
 @Database(
     entities = [
         FavoriteRepositoryEntity::class,
-        SearchedRepositoryEntity::class
+        SearchRepositoryEntity::class
     ],
     version = DATABASE_VERSION,
     exportSchema = false
@@ -24,5 +24,5 @@ abstract class TestGitHubDatabase : RoomDatabase() {
 
     abstract fun favoriteRepositoriesDao(): FavoriteRepositoriesDao
 
-    abstract fun searchedRepositoriesDao(): SearchedRepositoriesDao
+    abstract fun searchedRepositoriesDao(): SearchRepositoriesDao
 }

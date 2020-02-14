@@ -4,34 +4,34 @@ import androidx.paging.DataSource
 import com.testgithub.repositories.model.Repository
 import io.reactivex.Completable
 
-class SearchedRepositoriesDatabaseGateway(private val searchedRepositoriesDao: SearchedRepositoriesDao) {
+class SearchRepositoriesDatabaseGateway(private val searchRepositoriesDao: SearchRepositoriesDao) {
 
     fun reposByName(query: String): DataSource.Factory<Int, Repository> =
-        searchedRepositoriesDao.reposByName(query)
-            .map { SearchedRepositoryConverter.fromDatabase(it) }
+        searchRepositoriesDao.reposByName(query)
+            .map { SearchRepositoryConverter.fromDatabase(it) }
 
     fun insertList(posts: List<Repository>, query: String): Completable =
-        searchedRepositoriesDao.insertList(
-            SearchedRepositoryConverter.listToDatabase(
+        searchRepositoriesDao.insertList(
+            SearchRepositoryConverter.listToDatabase(
                 posts,
                 query
             )
         )
 
     fun update(repository: Repository, searchText: String?): Completable =
-        searchedRepositoriesDao.update(
-            SearchedRepositoryConverter.toDatabase(
+        searchRepositoriesDao.update(
+            SearchRepositoryConverter.toDatabase(
                 repository, searchText ?: ""
             )
         )
 
     fun deleteAll(): Completable =
         Completable.fromCallable {
-            searchedRepositoriesDao.deleteAll()
+            searchRepositoriesDao.deleteAll()
         }
 
     fun cleanFavoriteStatus(id: String): Completable =
-        searchedRepositoriesDao.getSearchedRepositoryById(id)
-            .flatMapCompletable { searchedRepositoriesDao.update(it.copy(isFavorite = false)) }
+        searchRepositoriesDao.getSearchedRepositoryById(id)
+            .flatMapCompletable { searchRepositoriesDao.update(it.copy(isFavorite = false)) }
 
 }

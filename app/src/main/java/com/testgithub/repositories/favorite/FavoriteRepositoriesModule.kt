@@ -1,8 +1,8 @@
-package com.testgithub.repositories.favorites
+package com.testgithub.repositories.favorite
 
 import com.testgithub.InjectionModule
 import com.testgithub.db.TestGitHubDatabase
-import com.testgithub.repositories.favorites.db.FavoriteRepositoriesDatabaseGateway
+import com.testgithub.repositories.favorite.db.FavoriteRepositoriesDatabaseGateway
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 

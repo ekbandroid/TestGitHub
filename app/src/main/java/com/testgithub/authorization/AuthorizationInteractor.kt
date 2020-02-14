@@ -2,7 +2,7 @@ package com.testgithub.authorization
 
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
-import com.testgithub.repositories.favorites.db.FavoriteRepositoriesDao
+import com.testgithub.repositories.favorite.db.FavoriteRepositoriesDao
 import io.reactivex.Completable
 
 class AuthorizationInteractor(

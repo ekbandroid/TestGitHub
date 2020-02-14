@@ -1,4 +1,4 @@
-package com.testgithub.repositories.favorites
+package com.testgithub.repositories.favorite
 
 import android.view.LayoutInflater
 import android.view.ViewGroup

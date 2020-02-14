@@ -4,7 +4,7 @@ import com.testgithub.InjectionModule
 import com.testgithub.db.TestGitHubDatabase
 import com.testgithub.repositories.search.api.GitHubApi
 import com.testgithub.repositories.search.api.GitHubService
-import com.testgithub.repositories.search.db.SearchedRepositoriesDatabaseGateway
+import com.testgithub.repositories.search.db.SearchRepositoriesDatabaseGateway
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 import retrofit2.Retrofit
@@ -17,7 +17,7 @@ object SearchRepositoriesModule : InjectionModule {
         single { get<TestGitHubDatabase>().searchedRepositoriesDao() }
 
         single {
-            SearchedRepositoriesDatabaseGateway(
+            SearchRepositoriesDatabaseGateway(
                 get()
             )
         }
@@ -43,7 +43,7 @@ object SearchRepositoriesModule : InjectionModule {
         }
 
         viewModel {
-            RepositoriesSearchViewModel(
+            SearchRepositoriesViewModel(
                 get(), get()
             )
         }
